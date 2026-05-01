@@ -1,0 +1,9 @@
+[
+  {
+    "name": "moondream-vision",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-moondream-vision",
+    "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
+    "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
+  }
+]
