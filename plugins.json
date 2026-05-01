@@ -1,9 +1,16 @@
 [
   {
-    "name": "moondream-vision",
+    "name": "Moondream Vision",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-moondream-vision",
     "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
-    "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
+    "entry": "shinsekai-moondream-vision.plugin:MoondreamVisionPlugin",
+  },
+  {
+    "name": "Whisper ASR",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-whisper-asr",
+    "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
+    "entry": "shinsekai-whisper-asr.plugin:WhisperASRPlugin",
   }
 ]
