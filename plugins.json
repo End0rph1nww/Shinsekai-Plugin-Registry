@@ -16,7 +16,7 @@
   {
     "name": "chat_ui_customize",
     "author": "Chihiro",
-    "repo": "RachelForster/shinsekai-whisper-asr",
+    "repo": "RachelForster/shinsekai-chatui-customize",
     "description": "Setting the theme of chat ui",
     "entry": "chat_ui_customize.plugin:ChatUiThemePlugin",
   },
