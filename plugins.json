@@ -11,7 +11,7 @@
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-whisper-asr",
     "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
-    "entry": "whisper_asr.plugin:WhisperASRPlugin",
+    "entry": "whisper_asr.plugin:WhisperAsrPlugin",
   },
   {
     "name": "chat_ui_customize",
