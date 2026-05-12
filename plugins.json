@@ -34,11 +34,4 @@
     "description": "MiniMax speech-2.x TTS adapter with character voice_id binding and reference-audio voice cloning",
     "entry": "minimax_tts.plugin:MinimaxTtsPlugin",
   },
-  {
-    "name": "tts_paragraph_split",
-    "author": "End0rph1nww",
-    "repo": "End0rph1nww/Shinsekai-TTS-Paragraph-Split",
-    "description": "Replace Shinsekai character TTS punctuation splitting with paragraph-only splitting",
-    "entry": "tts_paragraph_split.plugin:TtsParagraphSplitPlugin",
-  },
 ]
