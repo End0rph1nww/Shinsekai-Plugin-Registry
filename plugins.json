@@ -27,4 +27,11 @@
     "description": "Enable your agents to operate Chrome",
     "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
   }, 
+  {
+    "name": "minimax_tts",
+    "author": "End0rph1nww",
+    "repo": "End0rph1nww/Shinsekai-MiniMax-TTS",
+    "description": "MiniMax speech-2.x TTS adapter with character voice_id binding and reference-audio voice cloning",
+    "entry": "minimax_tts.plugin:MinimaxTtsPlugin",
+  },
 ]
