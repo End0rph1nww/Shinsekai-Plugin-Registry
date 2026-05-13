@@ -28,10 +28,10 @@
     "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
   }, 
   {
-    "name": "minimax_tts",
+    "name": "cloud_tts",
     "author": "End0rph1nww",
-    "repo": "End0rph1nww/Shinsekai-MiniMax-TTS",
-    "description": "MiniMax speech-2.x TTS adapter with character voice_id binding and reference-audio voice cloning",
-    "entry": "minimax_tts.plugin:MinimaxTtsPlugin",
+    "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
+    "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
+    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
   },
 ]
