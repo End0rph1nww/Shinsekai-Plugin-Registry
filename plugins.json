@@ -26,7 +26,7 @@
     "repo": "RachelForster/shinsekai-playwright-browser",
     "description": "Enable your agents to operate Chrome",
     "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin"
-  }, 
+  },
   {
     "name": "cloud_tts",
     "author": "End0rph1nww",
@@ -35,10 +35,17 @@
     "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin"
   },
   {
-  "name": "funasr_wss",
-  "author": "umikok7",
-  "repo": "umikok7/shinsekai-funasr-wss",
-  "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
-  "entry": "funasr_wss.plugin:FunASRWssPlugin"
+    "name": "funasr_wss",
+    "author": "umikok7",
+    "repo": "umikok7/shinsekai-funasr-wss",
+    "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
+    "entry": "funasr_wss.plugin:FunASRWssPlugin"
+  },
+  {
+    "name": "bilibili_live",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-bilibili-live",
+    "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
+    "entry": "bilibili_live.plugin:BilibiliLivePlugin"
   }
 ]
