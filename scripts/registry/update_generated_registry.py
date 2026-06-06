@@ -91,6 +91,7 @@ def load_package_results(package_results_dir: Path) -> list[dict[str, Any]]:
 
 
 PACKAGE_FIELDS = ("version", "commit_sha", "updated_at", "download_url", "sha256", "size", "package", "sec_scan", "logo")
+SOURCE_METADATA_FIELDS = ("display_name", "plugin_id")
 REPO_METADATA_FIELDS = ("stars", "stargazers_count", "forks", "forks_count", "repo_updated_at")
 
 
@@ -184,9 +185,15 @@ def merge_package_results(
             for field in PACKAGE_FIELDS:
                 if field in result:
                     merged[field] = result[field]
+            for field in SOURCE_METADATA_FIELDS:
+                if not merged.get(field) and result.get(field):
+                    merged[field] = result[field]
         elif str(entry["name"]) in base:
             for field in PACKAGE_FIELDS:
                 if field in base[str(entry["name"])]:
+                    merged[field] = base[str(entry["name"])][field]
+            for field in SOURCE_METADATA_FIELDS:
+                if not merged.get(field) and base[str(entry["name"])].get(field):
                     merged[field] = base[str(entry["name"])][field]
         generated[str(merged["name"])] = merged
     return generated
