@@ -72,8 +72,11 @@ Maintainers approve submissions by merging the generated registry PR. The packag
 registry/plugin_cache_original.json
 registry/plugins-md5.json
 plugins/<owner>/<plugin>/<version>/<zip>
+assets/<owner>/<plugin>/<version>/logo-<commit>.png
 ```
 
 Clients and the plugin market should prefer the R2 `registry/plugin_cache_original.json` URL for fresh reads. The GitHub Raw copy remains useful as a fallback and review artifact, but it can lag behind `main` because of Raw CDN caching.
 
 The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.
+
+Plugin logos can be committed directly in a plugin repository. During packaging, the workflow looks for `logo.png`, `logo.jpg`, `logo.jpeg`, or `logo.webp` in the repository root or common asset folders such as `assets/`, `static/`, `public/`, `resources/`, `images/`, and `img/`. Valid logos are uploaded to R2 under `assets/` and the generated registry receives the public `logo` URL.

@@ -90,7 +90,7 @@ def load_package_results(package_results_dir: Path) -> list[dict[str, Any]]:
     return results
 
 
-PACKAGE_FIELDS = ("version", "commit_sha", "updated_at", "download_url", "sha256", "size", "package", "sec_scan")
+PACKAGE_FIELDS = ("version", "commit_sha", "updated_at", "download_url", "sha256", "size", "package", "sec_scan", "logo")
 REPO_METADATA_FIELDS = ("stars", "stargazers_count", "forks", "forks_count", "repo_updated_at")
 
 
