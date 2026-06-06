@@ -88,14 +88,14 @@
     "verified": false,
     "version": "v0.0.0",
     "commit_sha": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
-    "updated_at": "2026-06-06T14:17:39Z",
+    "updated_at": "2026-06-06T14:31:23Z",
     "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-    "sha256": "e281652924ce24b8ffd406b5273e2afad9b922a8a977b3e6c8a5266d137b6ddc",
+    "sha256": "dfec543b3903666f6db6c23d1bbbdc2b4db8378befec5c3579b8689eaf807de1",
     "size": 108530,
     "package": {
       "source": "r2",
       "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-      "sha256": "e281652924ce24b8ffd406b5273e2afad9b922a8a977b3e6c8a5266d137b6ddc",
+      "sha256": "dfec543b3903666f6db6c23d1bbbdc2b4db8378befec5c3579b8689eaf807de1",
       "size": 108530,
       "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip"
     },
