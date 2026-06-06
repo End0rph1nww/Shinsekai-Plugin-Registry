@@ -84,18 +84,26 @@
     "tags": [
       "云端语音"
     ],
-    "trust_level": "community",
-    "verified": false,
+    "trust_level": "verified",
+    "verified": true,
+    "review": {
+      "status": "maintainer_verified",
+      "reviewed_by": "End0rph1nww",
+      "reviewed_at": "2026-06-06",
+      "reviewed_commit": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
+      "reviewed_version": "v0.0.0",
+      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #5 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/5"
+    },
     "version": "v0.0.0",
     "commit_sha": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
-    "updated_at": "2026-06-06T14:31:23Z",
+    "updated_at": "2026-06-06T14:41:33Z",
     "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-    "sha256": "dfec543b3903666f6db6c23d1bbbdc2b4db8378befec5c3579b8689eaf807de1",
+    "sha256": "0d04e9e7e25ba2434dd1aa2b4026005194c45d2ae0444a1901ffa28d4e746b95",
     "size": 108530,
     "package": {
       "source": "r2",
       "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-      "sha256": "dfec543b3903666f6db6c23d1bbbdc2b4db8378befec5c3579b8689eaf807de1",
+      "sha256": "0d04e9e7e25ba2434dd1aa2b4026005194c45d2ae0444a1901ffa28d4e746b95",
       "size": 108530,
       "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip"
     },
