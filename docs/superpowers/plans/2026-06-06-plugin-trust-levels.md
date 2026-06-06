@@ -43,9 +43,10 @@
 - [x] Add an Issue template for maintainers/users to request review of an existing plugin.
 - [x] Add a script that marks one plugin as Verified for a reviewed commit/version.
 - [x] Add a label-triggered parser so maintainers can approve by adding `verification-approved`.
+- [x] Add `verification-rejected` so maintainers can reject and close requests without changing the registry.
 - [x] The script must update `plugins.json`, not generated files.
 - [x] The workflow must create or update `verification/{plugin-name}` branch and PR.
-- [x] The workflow must support manual dispatch as a fallback and `verification-approved` labeled Issues with valid verification JSON as the main approval path.
+- [x] The workflow must support manual dispatch as a fallback, close approved Issues after opening a PR, and close rejected Issues after commenting.
 
 ### Task 3: Plugin Market Trust UI
 
