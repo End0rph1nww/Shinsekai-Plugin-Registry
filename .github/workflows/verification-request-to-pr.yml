@@ -185,6 +185,7 @@ jobs:
         if: github.event_name == 'issues' && steps.pr.outputs.pr_url != ''
         env:
           GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           PR_URL: ${{ steps.pr.outputs.pr_url }}
         run: |
@@ -201,6 +202,7 @@ jobs:
       - name: Close rejected verification issue
         env:
           GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ACTOR: ${{ github.actor }}
         run: |
