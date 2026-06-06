@@ -5,18 +5,18 @@
     "repo": "RachelForster/shinsekai-moondream-vision",
     "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
     "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
-    "version": "0.2.0",
+    "version": "0.1.0",
     "commit_sha": "5ec359b8fabbdc72aeb3e858acb5e75d1d28fc27",
-    "updated_at": "2026-06-06T12:27:27Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip",
-    "sha256": "fd979ba3c3c89ab7bab3742f87c9b4b5ed3c1d77ffe2707d05cbea40ca40bf39",
+    "updated_at": "2026-06-06T17:03:34Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip",
+    "sha256": "316e848397ff919872c224073126cc4b73d5015a6332d730bdf9ad27b39aa76c",
     "size": 27684,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip",
-      "sha256": "fd979ba3c3c89ab7bab3742f87c9b4b5ed3c1d77ffe2707d05cbea40ca40bf39",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip",
+      "sha256": "316e848397ff919872c224073126cc4b73d5015a6332d730bdf9ad27b39aa76c",
       "size": 27684,
-      "r2_key": "plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip"
+      "r2_key": "plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip"
     },
     "sec_scan": {
       "static": {
@@ -25,6 +25,8 @@
         "findings": []
       }
     },
+    "display_name": "Moondream 识屏",
+    "plugin_id": "com.shinsekai.moondream_vision",
     "trust_level": "community",
     "verified": false,
     "stars": 2,
@@ -67,6 +69,28 @@
     "repo": "RachelForster/shinsekai-playwright-browser",
     "description": "Enable your agents to operate Chrome",
     "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
+    "version": "0.1.0",
+    "commit_sha": "176fac7370a9141c3e809dcd508744e535ad126d",
+    "updated_at": "2026-06-06T17:03:35Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip",
+    "sha256": "b454faa538e1b09450de8af316291f34b1998471b4f8de7232e380d1338227db",
+    "size": 9426,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip",
+      "sha256": "b454faa538e1b09450de8af316291f34b1998471b4f8de7232e380d1338227db",
+      "size": 9426,
+      "r2_key": "plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "Playwright Browser",
+    "plugin_id": "com.shinsekai.playwright_browser",
     "trust_level": "community",
     "verified": false,
     "stars": 0,
@@ -84,28 +108,29 @@
     "tags": [
       "云端语音"
     ],
-    "trust_level": "verified",
-    "verified": true,
+    "trust_level": "verified_update_pending",
+    "verified": false,
     "review": {
-      "status": "maintainer_verified",
+      "status": "verified_update_pending",
       "reviewed_by": "End0rph1nww",
       "reviewed_at": "2026-06-06",
       "reviewed_commit": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
       "reviewed_version": "v0.0.0",
-      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #5 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/5"
+      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #5 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/5",
+      "pending_reason": "packaged commit or version differs from the reviewed artifact"
     },
-    "version": "v0.0.0",
+    "version": "0.11.0",
     "commit_sha": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
-    "updated_at": "2026-06-06T14:41:33Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-    "sha256": "0d04e9e7e25ba2434dd1aa2b4026005194c45d2ae0444a1901ffa28d4e746b95",
+    "updated_at": "2026-06-06T17:03:33Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.0/cloud_tts-0.11.0-8f3d262ac388.zip",
+    "sha256": "3880568cb08e166cc729e5a0ffa7976e3881ce0079cb0879f9ffbc2dcb9be8f4",
     "size": 108530,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
-      "sha256": "0d04e9e7e25ba2434dd1aa2b4026005194c45d2ae0444a1901ffa28d4e746b95",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.0/cloud_tts-0.11.0-8f3d262ac388.zip",
+      "sha256": "3880568cb08e166cc729e5a0ffa7976e3881ce0079cb0879f9ffbc2dcb9be8f4",
       "size": 108530,
-      "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip"
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.11.0/cloud_tts-0.11.0-8f3d262ac388.zip"
     },
     "sec_scan": {
       "static": {
@@ -114,7 +139,9 @@
         "findings": []
       }
     },
-    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.0.0/logo-8f3d262ac388.webp",
+    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.11.0/logo-8f3d262ac388.webp",
+    "display_name": "Cloud TTS",
+    "plugin_id": "com.shinsekai.cloud_tts",
     "stars": 2,
     "stargazers_count": 2,
     "forks": 1,
