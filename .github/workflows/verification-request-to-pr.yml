@@ -25,17 +25,27 @@ on:
         description: Short review notes
         required: false
         default: ""
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
+  issues: read
   pull-requests: write
 
 concurrency:
-  group: plugin-verification-${{ github.event.inputs.plugin_name }}
+  group: plugin-verification-${{ github.event.inputs.plugin_name || github.event.issue.number || github.run_id }}
   cancel-in-progress: false
 
 jobs:
   verification-pr:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issues' &&
+        github.event.label.name == 'verification-approved' &&
+        contains(github.event.issue.labels.*.name, 'plugin-verification')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,14 +59,56 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Parse verification issue
+        id: issue
+        if: github.event_name == 'issues'
+        run: python scripts/registry/parse_verification_issue.py --event-path "$GITHUB_EVENT_PATH" --output "$GITHUB_OUTPUT"
+
+      - name: Resolve verification inputs
+        id: verify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+          MANUAL_REVIEWED_BY: ${{ github.event.inputs.reviewed_by }}
+          MANUAL_REVIEWED_AT: ${{ github.event.inputs.reviewed_at }}
+          MANUAL_REVIEWED_COMMIT: ${{ github.event.inputs.reviewed_commit }}
+          MANUAL_REVIEWED_VERSION: ${{ github.event.inputs.reviewed_version }}
+          MANUAL_NOTES: ${{ github.event.inputs.notes }}
+          ISSUE_PLUGIN_NAME: ${{ steps.issue.outputs.plugin_name }}
+          ISSUE_REVIEWED_BY: ${{ github.actor }}
+          ISSUE_REVIEWED_COMMIT: ${{ steps.issue.outputs.reviewed_commit }}
+          ISSUE_REVIEWED_VERSION: ${{ steps.issue.outputs.reviewed_version }}
+          ISSUE_NOTES: ${{ steps.issue.outputs.notes }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            {
+              echo "plugin_name=$MANUAL_PLUGIN_NAME"
+              echo "reviewed_by=$MANUAL_REVIEWED_BY"
+              echo "reviewed_at=$MANUAL_REVIEWED_AT"
+              echo "reviewed_commit=$MANUAL_REVIEWED_COMMIT"
+              echo "reviewed_version=$MANUAL_REVIEWED_VERSION"
+              echo "notes=$MANUAL_NOTES"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "plugin_name=$ISSUE_PLUGIN_NAME"
+              echo "reviewed_by=$ISSUE_REVIEWED_BY"
+              echo "reviewed_at="
+              echo "reviewed_commit=$ISSUE_REVIEWED_COMMIT"
+              echo "reviewed_version=$ISSUE_REVIEWED_VERSION"
+              echo "notes=$ISSUE_NOTES"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Mark plugin verified
         env:
-          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
-          REVIEWED_BY: ${{ github.event.inputs.reviewed_by }}
-          REVIEWED_AT: ${{ github.event.inputs.reviewed_at }}
-          REVIEWED_COMMIT: ${{ github.event.inputs.reviewed_commit }}
-          REVIEWED_VERSION: ${{ github.event.inputs.reviewed_version }}
-          NOTES: ${{ github.event.inputs.notes }}
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          REVIEWED_BY: ${{ steps.verify.outputs.reviewed_by }}
+          REVIEWED_AT: ${{ steps.verify.outputs.reviewed_at }}
+          REVIEWED_COMMIT: ${{ steps.verify.outputs.reviewed_commit }}
+          REVIEWED_VERSION: ${{ steps.verify.outputs.reviewed_version }}
+          NOTES: ${{ steps.verify.outputs.notes }}
         run: |
           set -euo pipefail
           python scripts/registry/mark_plugin_verified.py \
@@ -76,7 +128,7 @@ jobs:
       - name: Commit verification branch
         id: commit
         env:
-          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
         run: |
           set -euo pipefail
           branch="verification/$PLUGIN_NAME"
@@ -99,7 +151,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
           BRANCH_NAME: ${{ steps.commit.outputs.branch }}
-          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
           set -euo pipefail
           body="$(mktemp)"
@@ -107,6 +160,10 @@ jobs:
             echo "Maintainer verification update for \`$PLUGIN_NAME\`."
             echo
             echo "This PR grants the Verified badge for the reviewed commit/version recorded in \`plugins.json\`."
+            if [ -n "$ISSUE_URL" ]; then
+              echo
+              echo "Verification request: $ISSUE_URL"
+            fi
             echo
             echo "Merging this PR will trigger the package workflow on main and refresh the generated registry."
           } > "$body"
