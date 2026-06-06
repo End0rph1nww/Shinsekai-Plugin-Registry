@@ -34,6 +34,14 @@ New plugin submissions are listed as Community plugins by default:
 
 This first review is an inclusion check, not a full security audit. Maintainer verification is a separate follow-up path through the `Verification Request` issue template and `Create Plugin Verification PR` workflow. Verified status is bound to the reviewed package commit and version; if a verified plugin publishes a different commit or version, generated registry output is downgraded to `verified_update_pending` until maintainers review it again.
 
+## Verify a Plugin
+
+After a plugin is already listed as Community, authors can open a `Verification Request` issue from the plugin market. The issue contains the reviewed plugin name, version, commit, package hash, and package URL.
+
+Maintainers approve a verification request by adding the `verification-approved` label to an issue that already has the `plugin-verification` label. The label-triggered workflow parses the issue JSON, records the labeling maintainer as `reviewed_by`, updates `plugins.json` on a `verification/{plugin-name}` branch, and opens a PR. Maintainers still merge that PR manually after reviewing the diff.
+
+The `Create Plugin Verification PR` workflow also keeps a manual `workflow_dispatch` entry as a fallback for cases where an issue payload needs correction.
+
 If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR validation, configure a `REGISTRY_BOT_TOKEN` secret with the minimum repository permissions needed for contents, pull requests, and issues. Without that bot token, GitHub may suppress workflows triggered by bot-created pushes.
 
 ## Registry Rules
