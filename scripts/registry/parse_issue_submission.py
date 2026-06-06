@@ -14,6 +14,7 @@ PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 REQUIRED_FIELDS = ("display_name", "desc", "author", "repo", "entry")
 OPTIONAL_COPY_FIELDS = ("logo", "version", "shinsekai_version", "support_platforms")
+DEFAULT_REVIEW = {"status": "ci_passed"}
 
 
 class SubmissionError(ValueError):
@@ -116,6 +117,9 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
         "description": desc,
         "desc": desc,
         "entry": require_string(payload, "entry"),
+        "trust_level": "community",
+        "verified": False,
+        "review": dict(DEFAULT_REVIEW),
     }
 
     tags = normalize_tags(payload.get("tags"))

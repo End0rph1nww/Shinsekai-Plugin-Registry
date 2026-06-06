@@ -59,6 +59,9 @@ def test_build_entry_from_valid_payload_derives_name_and_normalizes_repo() -> No
         "description": "Short description",
         "desc": "Short description",
         "entry": "plugins.demo.plugin:DemoPlugin",
+        "trust_level": "community",
+        "verified": False,
+        "review": {"status": "ci_passed"},
         "tags": ["tool", "demo"],
         "social_link": "https://github.com/owner",
     }

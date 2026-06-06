@@ -1,0 +1,123 @@
+name: Create Plugin Verification PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin_name:
+        description: Registry plugin name to mark verified
+        required: true
+      reviewed_by:
+        description: Maintainer or reviewer name
+        required: true
+      reviewed_at:
+        description: Review date in YYYY-MM-DD. Empty uses today in UTC.
+        required: false
+        default: ""
+      reviewed_commit:
+        description: Reviewed commit SHA. Empty uses current generated registry commit_sha.
+        required: false
+        default: ""
+      reviewed_version:
+        description: Reviewed version. Empty uses current generated registry version.
+        required: false
+        default: ""
+      notes:
+        description: Short review notes
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: plugin-verification-${{ github.event.inputs.plugin_name }}
+  cancel-in-progress: false
+
+jobs:
+  verification-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Mark plugin verified
+        env:
+          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+          REVIEWED_BY: ${{ github.event.inputs.reviewed_by }}
+          REVIEWED_AT: ${{ github.event.inputs.reviewed_at }}
+          REVIEWED_COMMIT: ${{ github.event.inputs.reviewed_commit }}
+          REVIEWED_VERSION: ${{ github.event.inputs.reviewed_version }}
+          NOTES: ${{ github.event.inputs.notes }}
+        run: |
+          set -euo pipefail
+          python scripts/registry/mark_plugin_verified.py \
+            --plugins-json plugins.json \
+            --generated-registry plugin_cache_original.json \
+            --output plugins.json \
+            --plugin-name "$PLUGIN_NAME" \
+            --reviewed-by "$REVIEWED_BY" \
+            --reviewed-at "$REVIEWED_AT" \
+            --reviewed-commit "$REVIEWED_COMMIT" \
+            --reviewed-version "$REVIEWED_VERSION" \
+            --notes "$NOTES"
+
+      - name: Validate registry
+        run: python scripts/registry/validate_plugins.py plugins.json
+
+      - name: Commit verification branch
+        id: commit
+        env:
+          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+        run: |
+          set -euo pipefail
+          branch="verification/$PLUGIN_NAME"
+          git config user.name "shinsekai-registry-bot"
+          git config user.email "shinsekai-registry-bot@users.noreply.github.com"
+          git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
+          git switch -C "$branch"
+          git add plugins.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(plugin-registry): mark $PLUGIN_NAME verified"
+          git push origin "HEAD:$branch" --force-with-lease
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update pull request
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          BRANCH_NAME: ${{ steps.commit.outputs.branch }}
+          PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          {
+            echo "Maintainer verification update for \`$PLUGIN_NAME\`."
+            echo
+            echo "This PR grants the Verified badge for the reviewed commit/version recorded in \`plugins.json\`."
+            echo
+            echo "Merging this PR will trigger the package workflow on main and refresh the generated registry."
+          } > "$body"
+          if gh pr view "$BRANCH_NAME" --json number >/dev/null 2>&1; then
+            gh pr edit "$BRANCH_NAME" \
+              --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
+              --body-file "$body"
+          else
+            gh pr create \
+              --head "$BRANCH_NAME" \
+              --base main \
+              --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
+              --body-file "$body"
+          fi
