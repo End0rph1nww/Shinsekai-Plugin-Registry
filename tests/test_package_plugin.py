@@ -74,6 +74,15 @@ def test_verify_entry_path_accepts_without_plugins_prefix(tmp_path: Path) -> Non
     assert verify_entry_path(source, "demo.plugin:DemoPlugin") == Path("plugins/demo/plugin.py")
 
 
+def test_verify_entry_path_accepts_flat_legacy_repo_with_plugin_name_prefix(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "plugin.py").write_text("class DemoPlugin:\n    pass\n", encoding="utf-8")
+
+    assert verify_entry_path(source, "demo_plugin.plugin:DemoPlugin", "demo_plugin") == Path("plugin.py")
+    assert verify_entry_path(source, "plugins.demo_plugin.plugin:DemoPlugin", "demo_plugin") == Path("plugin.py")
+
+
 def test_verify_entry_path_rejects_missing_module(tmp_path: Path) -> None:
     source = make_plugin(tmp_path)
 
