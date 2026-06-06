@@ -57,6 +57,11 @@ def test_merge_package_results_writes_object_cache() -> None:
             "size": 123,
             "r2_key": "plugins/owner/demo/1.0.0/demo.zip",
         },
+        "logo": "https://cdn.example.com/assets/owner/demo/1.0.0/logo-abcdef123456.png",
+        "logo_asset": {
+            "source_path": "source/logo.png",
+            "r2_key": "assets/owner/demo/1.0.0/logo-abcdef123456.png",
+        },
         "sec_scan": {"static": {"pass": True, "msg": "No blocked patterns found.", "findings": []}},
     }
 
@@ -67,6 +72,8 @@ def test_merge_package_results_writes_object_cache() -> None:
     assert generated["demo_plugin"]["description"] == "Demo"
     assert generated["demo_plugin"]["download_url"] == "https://cdn.example.com/plugins/demo.zip"
     assert generated["demo_plugin"]["package"]["source"] == "r2"
+    assert generated["demo_plugin"]["logo"] == "https://cdn.example.com/assets/owner/demo/1.0.0/logo-abcdef123456.png"
+    assert "logo_asset" not in generated["demo_plugin"]
 
 
 def test_merge_package_results_accepts_object_key_names() -> None:

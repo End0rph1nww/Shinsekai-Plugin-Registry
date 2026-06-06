@@ -24,6 +24,15 @@ DEFAULT_MAX_BYTES = 16_777_216
 DEFAULT_MAX_ARCHIVE_BYTES = 67_108_864
 DEFAULT_MAX_ARCHIVE_MEMBERS = 10_000
 DEFAULT_MAX_ARCHIVE_UNCOMPRESSED_BYTES = 134_217_728
+DEFAULT_MAX_LOGO_BYTES = 1_048_576
+LOGO_CANDIDATE_NAMES = ("logo.png", "logo.jpg", "logo.jpeg", "logo.webp")
+LOGO_CANDIDATE_DIRS = ("", "assets", "asset", "static", "public", "resources", "res", "images", "img")
+LOGO_CONTENT_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+}
 EXCLUDED_DIRS = {
     ".git",
     ".github",
@@ -74,6 +83,13 @@ def build_r2_key(owner: str, plugin_name: str, version: str, commit_sha: str) ->
     clean_version = version_without_v(version)
     commit12 = commit_sha[:12]
     return f"plugins/{owner}/{plugin_name}/{clean_version}/{plugin_name}-{clean_version}-{commit12}.zip"
+
+
+def build_r2_logo_key(owner: str, plugin_name: str, version: str, commit_sha: str, suffix: str) -> str:
+    clean_version = version_without_v(version)
+    commit12 = commit_sha[:12]
+    clean_suffix = suffix.lower() if suffix.lower() in LOGO_CONTENT_TYPES else ".png"
+    return f"assets/{owner}/{plugin_name}/{clean_version}/logo-{commit12}{clean_suffix}"
 
 
 def should_exclude(path: Path, root: Path) -> bool:
@@ -179,6 +195,16 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def find_logo_file(source_dir: Path) -> Path | None:
+    for dirname in LOGO_CANDIDATE_DIRS:
+        base = source_dir / dirname if dirname else source_dir
+        for filename in LOGO_CANDIDATE_NAMES:
+            candidate = base / filename
+            if candidate.is_file() and candidate.suffix.lower() in LOGO_CONTENT_TYPES:
+                return candidate
+    return None
+
+
 def package_local_plugin(
     *,
     source_dir: Path,
@@ -209,6 +235,23 @@ def package_local_plugin(
         r2_key = build_r2_key(owner, name, version, commit_sha)
         zip_path = output_dir / Path(r2_key).name
         build_zip(clean_dir, zip_path)
+        logo_path = find_logo_file(clean_dir)
+        logo_asset = None
+        logo_url = ""
+        if logo_path:
+            logo_size = logo_path.stat().st_size
+            if logo_size > DEFAULT_MAX_LOGO_BYTES:
+                raise PackageError(f"logo exceeds max size: {logo_size} > {DEFAULT_MAX_LOGO_BYTES}")
+            logo_r2_key = build_r2_logo_key(owner, name, version, commit_sha, logo_path.suffix)
+            logo_url = f"{public_base_url.rstrip('/')}/{logo_r2_key}"
+            logo_asset = {
+                "source_path": str(source_dir / logo_path.relative_to(clean_dir)),
+                "r2_key": logo_r2_key,
+                "url": logo_url,
+                "sha256": sha256_file(logo_path),
+                "size": logo_size,
+                "content_type": LOGO_CONTENT_TYPES[logo_path.suffix.lower()],
+            }
 
     size = zip_path.stat().st_size
     if size > max_bytes:
@@ -224,7 +267,7 @@ def package_local_plugin(
         "size": size,
         "r2_key": r2_key,
     }
-    return {
+    result = {
         "name": name,
         "version": version,
         "commit_sha": commit_sha,
@@ -236,6 +279,10 @@ def package_local_plugin(
         "package": package,
         "sec_scan": {"static": scan},
     }
+    if logo_asset:
+        result["logo"] = logo_url
+        result["logo_asset"] = logo_asset
+    return result
 
 
 def github_api_json(url: str, token: str | None = None) -> Any:
