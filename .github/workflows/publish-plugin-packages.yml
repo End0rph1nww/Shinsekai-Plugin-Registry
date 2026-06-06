@@ -1,6 +1,8 @@
 name: Publish Plugin Packages
 
 on:
+  schedule:
+    - cron: "17 */6 * * *"
   push:
     branches: [main]
     paths:
@@ -23,6 +25,12 @@ on:
         default: "true"
         type: choice
         options: ["true", "false"]
+      metadata_only:
+        description: "Refresh generated registry metadata such as stars/forks without rebuilding packages."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 permissions:
   contents: write
@@ -40,6 +48,7 @@ jobs:
       MAX_PACKAGE_BYTES: "16777216"
       DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
       FORCE_PACKAGE: ${{ github.event.inputs.force || 'false' }}
+      METADATA_ONLY: ${{ github.event.inputs.metadata_only || 'false' }}
       PLUGIN_NAMES_INPUT: ${{ github.event.inputs.plugin_names || '' }}
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -70,6 +79,8 @@ jobs:
           mkdir -p "$PACKAGE_RESULTS_DIR" "$PACKAGE_OUTPUT_DIR"
           if [ -n "$PLUGIN_NAMES_INPUT" ]; then
             echo "$PLUGIN_NAMES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//;/^$/d' > selected-plugins.txt
+          elif [ "$METADATA_ONLY" = "true" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+            : > selected-plugins.txt
           elif [ "${{ github.event_name }}" = "push" ]; then
             python scripts/registry/update_generated_registry.py \
               --plugins-json plugins.json \
@@ -119,7 +130,7 @@ jobs:
           cat selected-plugins.txt
 
       - name: Stop when no plugins changed
-        if: steps.select.outputs.count == '0'
+        if: steps.select.outputs.count == '0' && github.event_name == 'push'
         run: echo "No plugin changes detected."
 
       - name: Guard trusted publish context
@@ -129,7 +140,7 @@ jobs:
           exit 1
 
       - name: Check R2 configuration
-        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        if: (steps.select.outputs.count != '0' || github.event_name != 'push') && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
         run: |
           test -n "${{ secrets.R2_ACCOUNT_ID }}"
           test -n "${{ secrets.R2_ACCESS_KEY_ID }}"
@@ -156,7 +167,7 @@ jobs:
           R2_PUBLIC_BASE_URL: ${{ github.ref == 'refs/heads/main' && env.DRY_RUN != 'true' && secrets.R2_PUBLIC_BASE_URL || '' }}
 
       - name: Configure R2 credentials
-        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        if: (steps.select.outputs.count != '0' || github.event_name != 'push') && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p ~/.aws
           cat > ~/.aws/credentials <<EOF
@@ -186,7 +197,7 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
 
       - name: Update generated registry
-        if: steps.select.outputs.count != '0'
+        if: steps.select.outputs.count != '0' || github.event_name != 'push'
         run: |
           set -euo pipefail
           if [ "$DRY_RUN" = "true" ]; then
@@ -204,8 +215,24 @@ jobs:
               --md5-output plugins-md5.json
           fi
 
+      - name: Upload generated registry to R2
+        if: (steps.select.outputs.count != '0' || github.event_name != 'push') && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          aws s3 cp plugin_cache_original.json "s3://${R2_BUCKET}/registry/plugin_cache_original.json" \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --content-type "application/json; charset=utf-8" \
+            --cache-control "max-age=60, must-revalidate"
+          aws s3 cp plugins-md5.json "s3://${R2_BUCKET}/registry/plugins-md5.json" \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --content-type "application/json; charset=utf-8" \
+            --cache-control "max-age=30, must-revalidate"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+
       - name: Commit generated registry
-        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        if: (steps.select.outputs.count != '0' || github.event_name != 'push') && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
         run: |
           set -euo pipefail
           git config user.name "shinsekai-registry-bot"
