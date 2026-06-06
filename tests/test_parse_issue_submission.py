@@ -10,7 +10,10 @@ from scripts.registry.parse_issue_submission import (
     SubmissionError,
     build_registry_entry,
     extract_json_block,
+    infer_entry_from_source,
+    infer_name_from_entry,
     main,
+    plugin_name_from_repo,
     update_registry,
 )
 
@@ -18,8 +21,8 @@ from scripts.registry.parse_issue_submission import (
 @pytest.fixture(autouse=True)
 def fake_repo_clone(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     template = tmp_path / "template-repo"
-    (template / "plugins" / "demo").mkdir(parents=True)
-    (template / "plugins" / "demo" / "plugin.py").write_text("class DemoPlugin:\n    pass\n", encoding="utf-8")
+    template.mkdir(parents=True)
+    (template / "plugin.py").write_text("class DemoPlugin:\n    pass\n", encoding="utf-8")
     clone_index = 0
 
     def clone_repo_to_temp(_repo_slug: str) -> Path:
@@ -42,7 +45,6 @@ def valid_payload(**overrides: object) -> dict[str, object]:
         "desc": "Short description",
         "author": "End0rph1n",
         "repo": "https://github.com/owner/shinsekai-plugin-demo",
-        "entry": "plugins.demo.plugin:DemoPlugin",
         "tags": ["tool", "demo"],
         "social_link": "https://github.com/owner",
     }
@@ -76,7 +78,7 @@ def test_build_entry_from_valid_payload_derives_name_and_normalizes_repo() -> No
         "repo": "owner/shinsekai-plugin-demo",
         "description": "Short description",
         "desc": "Short description",
-        "entry": "plugins.demo.plugin:DemoPlugin",
+        "entry": "plugins.shinsekai_plugin_demo.plugin:DemoPlugin",
         "trust_level": "community",
         "verified": False,
         "review": {"status": "ci_passed"},
@@ -85,10 +87,16 @@ def test_build_entry_from_valid_payload_derives_name_and_normalizes_repo() -> No
     }
 
 
-def test_name_overrides_repo_derived_name() -> None:
-    entry = build_registry_entry(valid_payload(name="custom_plugin"))
+def test_name_and_entry_payload_fields_are_inferred_by_ci() -> None:
+    entry = build_registry_entry(
+        valid_payload(
+            entry="plugins.manual_entry.plugin:ManualPlugin",
+            name="manual_name",
+        )
+    )
 
-    assert entry["name"] == "custom_plugin"
+    assert entry["name"] == "shinsekai_plugin_demo"
+    assert entry["entry"] == "plugins.shinsekai_plugin_demo.plugin:DemoPlugin"
 
 
 def test_invalid_repo_url_fails() -> None:
@@ -106,13 +114,20 @@ def test_too_many_tags_fails() -> None:
         build_registry_entry(valid_payload(tags=["a", "b", "c", "d", "e", "f"]))
 
 
-def test_missing_entry_is_inferred_from_repository_source() -> None:
-    payload = valid_payload()
-    payload.pop("entry")
+def test_entry_is_inferred_from_repository_source() -> None:
+    entry = build_registry_entry(valid_payload())
 
-    entry = build_registry_entry(payload)
+    assert entry["entry"] == "plugins.shinsekai_plugin_demo.plugin:DemoPlugin"
 
-    assert entry["entry"] == "plugins.demo.plugin:DemoPlugin"
+
+def test_root_plugin_uses_normalized_repo_name(tmp_path: Path) -> None:
+    (tmp_path / "plugin.py").write_text("class MarketPlugin:\n    pass\n", encoding="utf-8")
+    repo_name = plugin_name_from_repo("owner/Shinsekai-Plugin-Market")
+    entry = infer_entry_from_source(tmp_path, repo_name)
+
+    assert repo_name == "shinsekai_plugin_market"
+    assert entry == "plugins.shinsekai_plugin_market.plugin:MarketPlugin"
+    assert infer_name_from_entry(entry, repo_name) == "shinsekai_plugin_market"
 
 
 def test_desc_too_long_fails() -> None:

@@ -17,7 +17,7 @@ JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
-OPTIONAL_COPY_FIELDS = ("entry", "logo", "version", "shinsekai_version")
+OPTIONAL_COPY_FIELDS = ("version", "shinsekai_version")
 DEFAULT_REVIEW = {"status": "ci_passed"}
 
 
@@ -61,7 +61,7 @@ def parse_github_repo_url(value: Any) -> str:
 
 
 def normalize_plugin_name(value: str) -> str:
-    name = value.strip().replace("-", "_")
+    name = value.strip().replace("-", "_").lower()
     if not name:
         raise SubmissionError("Plugin name cannot be empty.")
     if not PLUGIN_NAME_RE.fullmatch(name):
@@ -144,6 +144,14 @@ def infer_entry_from_source(source_dir: Path, plugin_name: str) -> str:
     return f"{module}:{class_name}"
 
 
+def infer_name_from_entry(entry: str, fallback: str) -> str:
+    module = entry.split(":", 1)[0].strip()
+    parts = [part for part in module.split(".") if part]
+    if len(parts) >= 2 and parts[0] == "plugins":
+        return normalize_plugin_name(parts[1])
+    return normalize_plugin_name(fallback)
+
+
 def clone_repo_to_temp(repo_slug: str) -> Path:
     temp_dir = Path(tempfile.mkdtemp(prefix="shinsekai-plugin-submission-"))
     try:
@@ -170,26 +178,13 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     if len(desc) > 200:
         raise SubmissionError("desc must be 200 characters or fewer.")
 
-    name_value = payload.get("name")
-    if name_value is None or name_value == "":
-        name = plugin_name_from_repo(repo_slug)
-    elif not isinstance(name_value, str):
-        raise SubmissionError("name must be a string when provided.")
-    else:
-        name = normalize_plugin_name(name_value)
+    repo_name = plugin_name_from_repo(repo_slug)
 
     source_dir = clone_repo_to_temp(repo_slug)
     try:
         repo_metadata = read_repo_metadata(source_dir)
-        if isinstance(repo_metadata.get("name"), str) and repo_metadata["name"].strip() and name_value in (None, ""):
-            name = normalize_plugin_name(repo_metadata["name"])
-        entry_value = payload.get("entry")
-        if not isinstance(entry_value, str) or not entry_value.strip():
-            metadata_entry = repo_metadata.get("entry")
-            if isinstance(metadata_entry, str) and metadata_entry.strip():
-                entry_value = metadata_entry.strip()
-            else:
-                entry_value = infer_entry_from_source(source_dir, name)
+        entry_value = infer_entry_from_source(source_dir, repo_name)
+        name = infer_name_from_entry(entry_value, repo_name)
         logo_value = payload.get("logo")
         if not isinstance(logo_value, str) or not logo_value.strip():
             metadata_logo = repo_metadata.get("logo")
