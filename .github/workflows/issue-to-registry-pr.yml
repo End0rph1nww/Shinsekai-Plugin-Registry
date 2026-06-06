@@ -1,0 +1,137 @@
+name: Create Plugin Registry PR From Issue
+
+on:
+  issues:
+    types: [opened, edited]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to parse
+        required: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: plugin-submission-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  issue-to-pr:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'plugin-publish')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve issue context
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ISSUE_NUMBER: ${{ github.event.issue.number }}
+          INPUT_ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+        run: |
+          set -euo pipefail
+          issue_number="${EVENT_ISSUE_NUMBER:-${INPUT_ISSUE_NUMBER}}"
+          if [ -z "$issue_number" ]; then
+            echo "Issue number is required." >&2
+            exit 1
+          fi
+          gh issue view "$issue_number" --json body,title --jq '.body' > issue-body.md
+          gh issue view "$issue_number" --json title --jq '.title' > issue-title.txt
+          echo "number=$issue_number" >> "$GITHUB_OUTPUT"
+          echo "branch=submission/issue-$issue_number" >> "$GITHUB_OUTPUT"
+
+      - name: Parse submission
+        id: parse
+        run: |
+          set +e
+          python scripts/registry/parse_issue_submission.py \
+            --issue-body-file issue-body.md \
+            --plugins-json plugins.json \
+            --output plugins.json \
+            --summary-file submission-summary.txt > parse.log 2>&1
+          status=$?
+          cat parse.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Comment validation failure
+        if: steps.parse.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          {
+            echo "Plugin submission validation failed."
+            echo
+            echo '```text'
+            cat parse.log
+            echo '```'
+          } > validation-comment.md
+          gh issue comment "$ISSUE_NUMBER" --body-file validation-comment.md
+          exit 1
+
+      - name: Validate registry after update
+        run: python scripts/registry/validate_plugins.py plugins.json
+
+      - name: Commit submission branch
+        id: commit
+        env:
+          BRANCH_NAME: ${{ steps.issue.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "shinsekai-registry-bot"
+          git config user.email "shinsekai-registry-bot@users.noreply.github.com"
+          git fetch origin "+refs/heads/$BRANCH_NAME:refs/remotes/origin/$BRANCH_NAME" || true
+          git switch -C "$BRANCH_NAME"
+          git add plugins.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "feat(plugin-registry): add submission from issue #${{ steps.issue.outputs.number }}"
+          git push origin "HEAD:$BRANCH_NAME" --force-with-lease
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Comment when no registry changes are needed
+        if: steps.commit.outputs.changed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: gh issue comment "$ISSUE_NUMBER" --body "Plugin submission is valid, but it does not change plugins.json."
+
+      - name: Create or update pull request
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          BRANCH_NAME: ${{ steps.issue.outputs.branch }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          set -euo pipefail
+          if gh pr view "$BRANCH_NAME" --json number >/dev/null 2>&1; then
+            gh pr edit "$BRANCH_NAME" \
+              --title "feat(plugin-registry): add plugin from issue #$ISSUE_NUMBER" \
+              --body-file submission-summary.txt
+            pr_url="$(gh pr view "$BRANCH_NAME" --json url --jq '.url')"
+          else
+            pr_url="$(gh pr create \
+              --head "$BRANCH_NAME" \
+              --base main \
+              --title "feat(plugin-registry): add plugin from issue #$ISSUE_NUMBER" \
+              --body-file submission-summary.txt)"
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body "Plugin submission passed validation. Registry PR: $pr_url"

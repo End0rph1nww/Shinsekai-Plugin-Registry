@@ -1,0 +1,219 @@
+name: Publish Plugin Packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins.json"
+  workflow_dispatch:
+    inputs:
+      plugin_names:
+        description: "Comma-separated plugin names. Empty means changed plugins on push, or all plugins for manual dry runs."
+        required: false
+        default: ""
+      force:
+        description: "Package even if generated metadata already exists."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      dry_run:
+        description: "Build and validate without uploading to R2 or committing generated files."
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plugin-package-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE_RESULTS_DIR: package-results
+      PACKAGE_OUTPUT_DIR: package-output
+      MAX_PACKAGE_BYTES: "16777216"
+      DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+      FORCE_PACKAGE: ${{ github.event.inputs.force || 'false' }}
+      PLUGIN_NAMES_INPUT: ${{ github.event.inputs.plugin_names || '' }}
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ github.ref == 'refs/heads/main' && secrets.REGISTRY_BOT_TOKEN || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling
+        run: python -m pip install --upgrade pytest awscli
+
+      - name: Validate registry scripts
+        run: |
+          python -m pytest tests -q
+          python scripts/registry/validate_plugins.py plugins.json
+
+      - name: Select plugins
+        id: select
+        run: |
+          set -euo pipefail
+          mkdir -p "$PACKAGE_RESULTS_DIR" "$PACKAGE_OUTPUT_DIR"
+          if [ -n "$PLUGIN_NAMES_INPUT" ]; then
+            echo "$PLUGIN_NAMES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//;/^$/d' > selected-plugins.txt
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            python scripts/registry/update_generated_registry.py \
+              --plugins-json plugins.json \
+              --detect-changed-from HEAD^ \
+              --selection-output selected-plugins.txt
+          else
+            python - <<'PY' > selected-plugins.txt
+          import json
+          with open("plugins.json", encoding="utf-8") as handle:
+              data = json.load(handle)
+          if isinstance(data, list):
+              for entry in data:
+                  print(entry["name"])
+          else:
+              entries = data.get("plugins", data)
+              for name, entry in entries.items():
+                  print(entry.get("name", name))
+          PY
+          fi
+          sort -u selected-plugins.txt -o selected-plugins.txt
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "$DRY_RUN" != "true" ] && [ "$FORCE_PACKAGE" != "true" ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+
+          selected = [line.strip() for line in Path("selected-plugins.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+          cache_path = Path("plugin_cache_original.json")
+          if not cache_path.exists():
+              raise SystemExit(0)
+          data = json.loads(cache_path.read_text(encoding="utf-8"))
+          if isinstance(data, list):
+              entries = [(entry.get("name"), entry) for entry in data if isinstance(entry, dict)]
+          else:
+              values = data.get("plugins", data)
+              entries = [(name, entry) for name, entry in values.items() if isinstance(entry, dict)]
+          packaged = {entry.get("name", name) for name, entry in entries if entry.get("package", {}).get("url")}
+          kept = [name for name in selected if name not in packaged]
+          Path("selected-plugins.txt").write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+          skipped = sorted(set(selected) - set(kept))
+          if skipped:
+              print("Skipped already packaged plugin(s); set force=true to rebuild: " + ", ".join(skipped))
+          PY
+          fi
+          count="$(sed '/^$/d' selected-plugins.txt | wc -l | tr -d ' ')"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Selected $count plugin(s):"
+          cat selected-plugins.txt
+
+      - name: Stop when no plugins changed
+        if: steps.select.outputs.count == '0'
+        run: echo "No plugin changes detected."
+
+      - name: Guard trusted publish context
+        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref != 'refs/heads/main'
+        run: |
+          echo "Non-dry publishes must run from refs/heads/main. Use dry_run=true on feature branches."
+          exit 1
+
+      - name: Check R2 configuration
+        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        run: |
+          test -n "${{ secrets.R2_ACCOUNT_ID }}"
+          test -n "${{ secrets.R2_ACCESS_KEY_ID }}"
+          test -n "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          test -n "${{ secrets.R2_BUCKET }}"
+          test -n "${{ secrets.R2_PUBLIC_BASE_URL }}"
+
+      - name: Package selected plugins
+        if: steps.select.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          while IFS= read -r plugin_name; do
+            [ -n "$plugin_name" ] || continue
+            echo "Packaging $plugin_name"
+            python scripts/registry/package_plugin.py \
+              --plugins-json plugins.json \
+              --plugin-name "$plugin_name" \
+              --output-dir "$PACKAGE_OUTPUT_DIR/$plugin_name" \
+              --result-file "$PACKAGE_RESULTS_DIR/$plugin_name.json" \
+              --public-base-url "${R2_PUBLIC_BASE_URL:-https://example.invalid}" \
+              --max-bytes "$MAX_PACKAGE_BYTES"
+          done < selected-plugins.txt
+        env:
+          R2_PUBLIC_BASE_URL: ${{ github.ref == 'refs/heads/main' && env.DRY_RUN != 'true' && secrets.R2_PUBLIC_BASE_URL || '' }}
+
+      - name: Configure R2 credentials
+        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials <<EOF
+          [default]
+          aws_access_key_id=${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          EOF
+          cat > ~/.aws/config <<EOF
+          [default]
+          region=auto
+          EOF
+
+      - name: Upload packages to R2
+        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          python - <<'PY' > upload-commands.sh
+          import json
+          from pathlib import Path
+          for path in sorted(Path("package-results").glob("*.json")):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              print("aws s3 cp " + json.dumps(data["zip_path"]) + " " + json.dumps("s3://${R2_BUCKET}/" + data["package"]["r2_key"]) + " --endpoint-url " + json.dumps("https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"))
+          PY
+          bash upload-commands.sh
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+
+      - name: Update generated registry
+        if: steps.select.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          if [ "$DRY_RUN" = "true" ]; then
+            python scripts/registry/update_generated_registry.py \
+              --plugins-json plugins.json \
+              --package-results-dir "$PACKAGE_RESULTS_DIR" \
+              --output plugin_cache_original.json \
+              --md5-output plugins-md5.json \
+              --dry-run
+          else
+            python scripts/registry/update_generated_registry.py \
+              --plugins-json plugins.json \
+              --package-results-dir "$PACKAGE_RESULTS_DIR" \
+              --output plugin_cache_original.json \
+              --md5-output plugins-md5.json
+          fi
+
+      - name: Commit generated registry
+        if: steps.select.outputs.count != '0' && env.DRY_RUN != 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "shinsekai-registry-bot"
+          git config user.email "shinsekai-registry-bot@users.noreply.github.com"
+          git add plugin_cache_original.json plugins-md5.json
+          if git diff --cached --quiet; then
+            echo "Generated registry did not change."
+            exit 0
+          fi
+          git commit -m "ci(plugin-registry): update generated plugin package metadata"
+          git push origin HEAD:main
