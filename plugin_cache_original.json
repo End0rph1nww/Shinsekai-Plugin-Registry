@@ -55,7 +55,27 @@
     "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
     "tags": [
       "云端语音"
-    ]
+    ],
+    "version": "v0.0.0",
+    "commit_sha": "8c573e8d1df30977217966ea7bd2a3ae5f68a9dc",
+    "updated_at": "2026-06-06T12:30:56Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip",
+    "sha256": "ee39a9bdf0e708fa7af7ed4a179f4aba090d06fa8b8ed64945af48486136518b",
+    "size": 82779,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip",
+      "sha256": "ee39a9bdf0e708fa7af7ed4a179f4aba090d06fa8b8ed64945af48486136518b",
+      "size": 82779,
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    }
   },
   "funasr_wss": {
     "name": "funasr_wss",
