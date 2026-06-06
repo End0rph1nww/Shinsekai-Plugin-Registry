@@ -128,9 +128,15 @@ jobs:
         id: commit
         env:
           PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
-          branch="verification/$PLUGIN_NAME"
+          if [ -n "$ISSUE_NUMBER" ]; then
+            branch="verification/$PLUGIN_NAME-issue-$ISSUE_NUMBER"
+          else
+            branch="verification/$PLUGIN_NAME-manual-$RUN_ID"
+          fi
           git config user.name "shinsekai-registry-bot"
           git config user.email "shinsekai-registry-bot@users.noreply.github.com"
           git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
@@ -167,11 +173,12 @@ jobs:
             echo
             echo "Merging this PR will trigger the package workflow on main and refresh the generated registry."
           } > "$body"
-          if gh pr view "$BRANCH_NAME" --json number >/dev/null 2>&1; then
-            gh pr edit "$BRANCH_NAME" \
+          existing_pr_number="$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing_pr_number" ]; then
+            gh pr edit "$existing_pr_number" \
               --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
               --body-file "$body"
-            pr_url="$(gh pr view "$BRANCH_NAME" --json url --jq .url)"
+            pr_url="$(gh pr view "$existing_pr_number" --json url --jq .url)"
           else
             pr_url="$(gh pr create \
               --head "$BRANCH_NAME" \
