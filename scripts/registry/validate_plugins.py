@@ -104,8 +104,8 @@ def validate_entry(entry: dict[str, Any]) -> None:
     if desc is not None:
         if not isinstance(desc, str) or not desc.strip():
             raise RegistryValidationError(f"{name}: desc must be a non-empty string when provided.")
-        if len(desc) > 70:
-            raise RegistryValidationError(f"{name}: desc must be 70 characters or fewer.")
+        if len(desc) > 200:
+            raise RegistryValidationError(f"{name}: desc must be 200 characters or fewer.")
 
     display_name = entry.get("display_name")
     if display_name is not None and (not isinstance(display_name, str) or not display_name.strip()):

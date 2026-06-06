@@ -72,8 +72,8 @@ def test_too_many_tags_fails() -> None:
 
 
 def test_desc_length_is_checked_when_desc_field_is_present() -> None:
-    with pytest.raises(RegistryValidationError, match="70 characters"):
-        validate_registry([valid_entry(desc="x" * 71)])
+    with pytest.raises(RegistryValidationError, match="200 characters"):
+        validate_registry([valid_entry(desc="x" * 201)])
 
 
 def test_cli_validates_current_registry_file() -> None:

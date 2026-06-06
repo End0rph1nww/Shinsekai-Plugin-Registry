@@ -96,8 +96,8 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
 
     repo_slug = parse_github_repo_url(payload["repo"])
     desc = require_string(payload, "desc")
-    if len(desc) > 70:
-        raise SubmissionError("desc must be 70 characters or fewer.")
+    if len(desc) > 200:
+        raise SubmissionError("desc must be 200 characters or fewer.")
 
     name_value = payload.get("name")
     if name_value is None or name_value == "":
