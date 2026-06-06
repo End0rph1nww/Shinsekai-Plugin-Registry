@@ -19,7 +19,7 @@ class RegistryValidationError(ValueError):
 
 def load_registry(path: Path) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         raise RegistryValidationError(f"{path} is not valid JSON: {exc.msg}.") from exc
 
@@ -30,9 +30,9 @@ def iter_entries(registry: Any) -> list[dict[str, Any]]:
     elif isinstance(registry, dict):
         plugins = registry.get("plugins")
         if isinstance(plugins, dict):
-            entries = list(plugins.values())
+            entries = registry_object_values(plugins)
         else:
-            entries = list(registry.values())
+            entries = registry_object_values(registry)
     else:
         raise RegistryValidationError("plugins.json must be a JSON array or object.")
 
@@ -42,6 +42,17 @@ def iter_entries(registry: Any) -> list[dict[str, Any]]:
             raise RegistryValidationError(f"entry #{index + 1} must be an object.")
         normalized.append(entry)
     return normalized
+
+
+def registry_object_values(registry: dict[str, Any]) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for name, value in registry.items():
+        if not isinstance(value, dict):
+            raise RegistryValidationError("each plugin entry must be an object.")
+        entry = dict(value)
+        entry.setdefault("name", name)
+        entries.append(entry)
+    return entries
 
 
 def validate_repo(value: Any, name: str) -> None:

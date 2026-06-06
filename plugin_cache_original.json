@@ -1,0 +1,51 @@
+{
+  "moondream_vision": {
+    "name": "moondream_vision",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-moondream-vision",
+    "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
+    "entry": "moondream_vision.plugin:MoondreamVisionPlugin"
+  },
+  "whisper_asr": {
+    "name": "whisper_asr",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-whisper-asr",
+    "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
+    "entry": "whisper_asr.plugin:WhisperAsrPlugin"
+  },
+  "chat_ui_customize": {
+    "name": "chat_ui_customize",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-chatui-customize",
+    "description": "Setting the theme of chat ui",
+    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin"
+  },
+  "playwright_browser": {
+    "name": "playwright_browser",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-playwright-browser",
+    "description": "Enable your agents to operate Chrome",
+    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin"
+  },
+  "cloud_tts": {
+    "name": "cloud_tts",
+    "author": "End0rph1nww",
+    "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
+    "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
+    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin"
+  },
+  "funasr_wss": {
+    "name": "funasr_wss",
+    "author": "umikok7",
+    "repo": "umikok7/shinsekai-funasr-wss",
+    "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
+    "entry": "funasr_wss.plugin:FunASRWssPlugin"
+  },
+  "bilibili_live": {
+    "name": "bilibili_live",
+    "author": "Chihiro",
+    "repo": "RachelForster/shinsekai-bilibili-live",
+    "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
+    "entry": "bilibili_live.plugin:BilibiliLivePlugin"
+  }
+}
