@@ -45,7 +45,7 @@
 - [x] Add a label-triggered parser so maintainers can approve by adding `verification-approved`.
 - [x] The script must update `plugins.json`, not generated files.
 - [x] The workflow must create or update `verification/{plugin-name}` branch and PR.
-- [x] The workflow must support manual dispatch as a fallback and `plugin-verification` + `verification-approved` labeled Issues as the main approval path.
+- [x] The workflow must support manual dispatch as a fallback and `verification-approved` labeled Issues with valid verification JSON as the main approval path.
 
 ### Task 3: Plugin Market Trust UI
 
