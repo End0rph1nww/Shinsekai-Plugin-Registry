@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
+import shutil
+import subprocess
+import tempfile
 import re
 import sys
 from pathlib import Path
@@ -12,8 +16,8 @@ from urllib.parse import urlparse
 JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
-REQUIRED_FIELDS = ("display_name", "desc", "author", "repo", "entry")
-OPTIONAL_COPY_FIELDS = ("logo", "version", "shinsekai_version", "support_platforms")
+REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
+OPTIONAL_COPY_FIELDS = ("entry", "logo", "version", "shinsekai_version")
 DEFAULT_REVIEW = {"status": "ci_passed"}
 
 
@@ -91,6 +95,72 @@ def normalize_tags(value: Any) -> list[str]:
     return tags
 
 
+def read_repo_metadata(source_dir: Path) -> dict[str, Any]:
+    for name in ("plugin.json", "shinsekai.plugin.json"):
+        path = source_dir / name
+        if not path.is_file():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise SubmissionError(f"{name} is not valid JSON: {exc.msg}.") from exc
+        if not isinstance(payload, dict):
+            raise SubmissionError(f"{name} must contain a JSON object.")
+        return payload
+    return {}
+
+
+def first_plugin_class(plugin_file: Path) -> str:
+    try:
+        tree = ast.parse(plugin_file.read_text(encoding="utf-8", errors="ignore"))
+    except SyntaxError:
+        return "Plugin"
+    classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
+    for name in classes:
+        if name.lower().endswith("plugin"):
+            return name
+    return classes[0] if classes else "Plugin"
+
+
+def infer_entry_from_source(source_dir: Path, plugin_name: str) -> str:
+    candidates = sorted(
+        [
+            path
+            for path in source_dir.rglob("plugin.py")
+            if not any(part in {".git", "__pycache__", ".venv", "venv", "node_modules"} for part in path.relative_to(source_dir).parts)
+        ],
+        key=lambda path: (len(path.relative_to(source_dir).parts), path.as_posix()),
+    )
+    if not candidates:
+        raise SubmissionError("entry is missing and CI could not find plugin.py in the repository.")
+    plugin_file = candidates[0]
+    class_name = first_plugin_class(plugin_file)
+    rel = plugin_file.relative_to(source_dir).with_suffix("")
+    module = ".".join(rel.parts)
+    if module == "plugin":
+        module = f"plugins.{plugin_name.replace('-', '_')}.plugin"
+    elif not module.startswith("plugins."):
+        module = f"plugins.{module}"
+    return f"{module}:{class_name}"
+
+
+def clone_repo_to_temp(repo_slug: str) -> Path:
+    temp_dir = Path(tempfile.mkdtemp(prefix="shinsekai-plugin-submission-"))
+    try:
+        subprocess.run(
+            ["git", "clone", "--depth", "1", f"https://github.com/{repo_slug}.git", str(temp_dir)],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        detail = (exc.stderr or exc.stdout or "").strip()
+        raise SubmissionError(f"could not clone plugin repository for CI metadata inference. {detail}") from exc
+    return temp_dir
+
+
 def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     for field in REQUIRED_FIELDS:
         require_string(payload, field)
@@ -108,6 +178,26 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     else:
         name = normalize_plugin_name(name_value)
 
+    source_dir = clone_repo_to_temp(repo_slug)
+    try:
+        repo_metadata = read_repo_metadata(source_dir)
+        if isinstance(repo_metadata.get("name"), str) and repo_metadata["name"].strip() and name_value in (None, ""):
+            name = normalize_plugin_name(repo_metadata["name"])
+        entry_value = payload.get("entry")
+        if not isinstance(entry_value, str) or not entry_value.strip():
+            metadata_entry = repo_metadata.get("entry")
+            if isinstance(metadata_entry, str) and metadata_entry.strip():
+                entry_value = metadata_entry.strip()
+            else:
+                entry_value = infer_entry_from_source(source_dir, name)
+        logo_value = payload.get("logo")
+        if not isinstance(logo_value, str) or not logo_value.strip():
+            metadata_logo = repo_metadata.get("logo")
+            if isinstance(metadata_logo, str) and metadata_logo.strip():
+                logo_value = metadata_logo.strip()
+    finally:
+        shutil.rmtree(source_dir, ignore_errors=True)
+
     entry = {
         "name": name,
         "display_name": require_string(payload, "display_name"),
@@ -116,7 +206,7 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
         "repo": repo_slug,
         "description": desc,
         "desc": desc,
-        "entry": require_string(payload, "entry"),
+        "entry": str(entry_value).strip(),
         "trust_level": "community",
         "verified": False,
         "review": dict(DEFAULT_REVIEW),
@@ -135,6 +225,8 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     for field in OPTIONAL_COPY_FIELDS:
         if field in payload and payload[field] not in (None, ""):
             entry[field] = payload[field]
+    if isinstance(logo_value, str) and logo_value.strip():
+        entry["logo"] = logo_value.strip()
 
     return entry
 

@@ -93,6 +93,36 @@ def test_merge_package_results_accepts_object_key_names() -> None:
     assert generated["demo_plugin"]["download_url"] == "https://cdn.example.com/plugins/demo.zip"
 
 
+def test_merge_package_results_hydrates_display_name_from_package_result() -> None:
+    registry = [plugin("demo_plugin", description="Demo")]
+    package = {
+        "name": "demo_plugin",
+        "display_name": "Demo Display",
+        "plugin_id": "com.shinsekai.demo",
+        "download_url": "https://cdn.example.com/plugins/demo.zip",
+        "package": {"source": "r2"},
+    }
+
+    generated = merge_package_results(registry, [package])
+
+    assert generated["demo_plugin"]["display_name"] == "Demo Display"
+    assert generated["demo_plugin"]["plugin_id"] == "com.shinsekai.demo"
+
+
+def test_merge_package_results_keeps_source_display_name_over_package_result() -> None:
+    registry = [plugin("demo_plugin", display_name="Source Display")]
+    package = {
+        "name": "demo_plugin",
+        "display_name": "Package Display",
+        "download_url": "https://cdn.example.com/plugins/demo.zip",
+        "package": {"source": "r2"},
+    }
+
+    generated = merge_package_results(registry, [package])
+
+    assert generated["demo_plugin"]["display_name"] == "Source Display"
+
+
 def test_merge_repo_metadata_adds_github_counts_without_overwriting_package_timestamp() -> None:
     registry = {
         "demo_plugin": {

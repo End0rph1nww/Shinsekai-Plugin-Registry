@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,23 @@ from scripts.registry.parse_issue_submission import (
     main,
     update_registry,
 )
+
+
+@pytest.fixture(autouse=True)
+def fake_repo_clone(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    template = tmp_path / "template-repo"
+    (template / "plugins" / "demo").mkdir(parents=True)
+    (template / "plugins" / "demo" / "plugin.py").write_text("class DemoPlugin:\n    pass\n", encoding="utf-8")
+    clone_index = 0
+
+    def clone_repo_to_temp(_repo_slug: str) -> Path:
+        nonlocal clone_index
+        clone_index += 1
+        clone = tmp_path / f"clone-{clone_index}"
+        shutil.copytree(template, clone)
+        return clone
+
+    monkeypatch.setattr("scripts.registry.parse_issue_submission.clone_repo_to_temp", clone_repo_to_temp)
 
 
 def issue_body(payload: str) -> str:
@@ -88,12 +106,13 @@ def test_too_many_tags_fails() -> None:
         build_registry_entry(valid_payload(tags=["a", "b", "c", "d", "e", "f"]))
 
 
-def test_missing_entry_fails() -> None:
+def test_missing_entry_is_inferred_from_repository_source() -> None:
     payload = valid_payload()
     payload.pop("entry")
 
-    with pytest.raises(SubmissionError, match="entry is required"):
-        build_registry_entry(payload)
+    entry = build_registry_entry(payload)
+
+    assert entry["entry"] == "plugins.demo.plugin:DemoPlugin"
 
 
 def test_desc_too_long_fails() -> None:

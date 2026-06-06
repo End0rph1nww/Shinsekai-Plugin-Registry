@@ -153,6 +153,168 @@ def test_package_local_plugin_builds_clean_zip_and_metadata(tmp_path: Path) -> N
     assert "build/skip.txt" not in names
 
 
+def test_package_local_plugin_prefers_plugin_py_version_when_registry_version_missing(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "plugin.py").write_text(
+        "\n".join(
+            [
+                "class DemoPlugin:",
+                "    @property",
+                "    def plugin_name(self):",
+                "        return 'Demo Display'",
+                "",
+                "    @property",
+                "    def plugin_version(self):",
+                "        return '0.2.1'",
+                "",
+                "    @property",
+                "    def plugin_id(self):",
+                "        return 'com.shinsekai.demo'",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "demo_plugin",
+            "repo": "owner/demo-plugin",
+            "entry": "demo_plugin.plugin:DemoPlugin",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+        fallback_version="v9.9.9",
+    )
+
+    assert result["version"] == "0.2.1"
+    assert result["display_name"] == "Demo Display"
+    assert result["plugin_id"] == "com.shinsekai.demo"
+    assert result["package"]["r2_key"] == "plugins/owner/demo_plugin/0.2.1/demo_plugin-0.2.1-abcdef123456.zip"
+
+
+def test_package_local_plugin_keeps_explicit_registry_version(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "plugin.py").write_text(
+        "\n".join(
+            [
+                "class DemoPlugin:",
+                "    @property",
+                "    def plugin_name(self):",
+                "        return 'Demo Display'",
+                "",
+                "    @property",
+                "    def plugin_version(self):",
+                "        return '0.2.1'",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "demo_plugin",
+            "repo": "owner/demo-plugin",
+            "entry": "demo_plugin.plugin:DemoPlugin",
+            "version": "v3.0.0",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+        fallback_version="v9.9.9",
+    )
+
+    assert result["version"] == "v3.0.0"
+    assert result["display_name"] == "Demo Display"
+
+
+def test_package_local_plugin_uses_contribution_title_as_display_name(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "plugin.py").write_text(
+        "\n".join(
+            [
+                "class PlaywrightBrowserPlugin:",
+                "    @property",
+                "    def plugin_version(self):",
+                "        return '0.1.0'",
+                "",
+                "    def contribute(self):",
+                "        return ToolsTabContribution(title='Playwright Browser')",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "playwright_browser",
+            "repo": "owner/playwright-browser",
+            "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+        fallback_version="v9.9.9",
+    )
+
+    assert result["version"] == "0.1.0"
+    assert result["display_name"] == "Playwright Browser"
+
+
+def test_package_local_plugin_resolves_imported_state_constants(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "state.py").write_text('PLUGIN_VERSION = "0.11.0"\nPLUGIN_ID = "com.shinsekai.cloud_tts"\n', encoding="utf-8")
+    (source / "plugin.py").write_text(
+        "\n".join(
+            [
+                "from plugins.cloud_tts import state",
+                "",
+                "class CloudTtsPlugin:",
+                "    @property",
+                "    def plugin_name(self):",
+                "        return 'Cloud TTS'",
+                "",
+                "    @property",
+                "    def plugin_version(self):",
+                "        return state.PLUGIN_VERSION",
+                "",
+                "    @property",
+                "    def plugin_id(self):",
+                "        return state.PLUGIN_ID",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "cloud_tts",
+            "repo": "owner/cloud-tts",
+            "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+        fallback_version="v9.9.9",
+    )
+
+    assert result["version"] == "0.11.0"
+    assert result["display_name"] == "Cloud TTS"
+    assert result["plugin_id"] == "com.shinsekai.cloud_tts"
+
+
 def test_package_local_plugin_rejects_static_scan_failure(tmp_path: Path) -> None:
     source = make_plugin(tmp_path)
     (source / "plugins" / "demo" / "plugin.py").write_text("eval(user_input)\n", encoding="utf-8")
