@@ -64,4 +64,16 @@ python -m pytest tests -q
 python scripts\registry\validate_plugins.py plugins.json
 ```
 
-This PR stage only implements submission validation and maintainer-review PR creation. Packaging approved plugins to R2 belongs to the follow-up Registry package CI stage.
+## Generated Registry and R2 Distribution
+
+Maintainers approve submissions by merging the generated registry PR. The package workflow then builds clean plugin zips, uploads them to R2, updates `plugin_cache_original.json` and `plugins-md5.json`, and mirrors those generated JSON files to R2:
+
+```text
+registry/plugin_cache_original.json
+registry/plugins-md5.json
+plugins/<owner>/<plugin>/<version>/<zip>
+```
+
+Clients and the plugin market should prefer the R2 `registry/plugin_cache_original.json` URL for fresh reads. The GitHub Raw copy remains useful as a fallback and review artifact, but it can lag behind `main` because of Raw CDN caching.
+
+The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.

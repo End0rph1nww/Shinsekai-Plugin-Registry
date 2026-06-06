@@ -7,6 +7,7 @@ from pathlib import Path
 from scripts.registry.update_generated_registry import (
     detect_changed_plugin_names,
     merge_package_results,
+    merge_repo_metadata,
     update_generated_registry,
 )
 
@@ -83,6 +84,34 @@ def test_merge_package_results_accepts_object_key_names() -> None:
 
     assert generated["demo_plugin"]["name"] == "demo_plugin"
     assert generated["demo_plugin"]["download_url"] == "https://cdn.example.com/plugins/demo.zip"
+
+
+def test_merge_repo_metadata_adds_github_counts_without_overwriting_package_timestamp() -> None:
+    registry = {
+        "demo_plugin": {
+            **plugin("demo_plugin", updated_at="2026-06-06T00:00:00Z"),
+            "package": {"url": "https://cdn.example.com/plugins/demo.zip"},
+        }
+    }
+
+    generated = merge_repo_metadata(
+        registry,
+        {
+            "demo_plugin": {
+                "stars": 42,
+                "forks": 7,
+                "repo_updated_at": "2026-06-05T00:00:00Z",
+            }
+        },
+    )
+
+    assert generated["demo_plugin"]["stars"] == 42
+    assert generated["demo_plugin"]["stargazers_count"] == 42
+    assert generated["demo_plugin"]["forks"] == 7
+    assert generated["demo_plugin"]["forks_count"] == 7
+    assert generated["demo_plugin"]["repo_updated_at"] == "2026-06-05T00:00:00Z"
+    assert generated["demo_plugin"]["updated_at"] == "2026-06-06T00:00:00Z"
+    assert generated["demo_plugin"]["package"]["url"] == "https://cdn.example.com/plugins/demo.zip"
 
 
 def test_merge_package_results_preserves_existing_package_metadata() -> None:
