@@ -101,7 +101,7 @@ def should_exclude_archive_member(path: PurePosixPath) -> bool:
     return False
 
 
-def candidate_entry_paths(entry: str) -> list[Path]:
+def candidate_entry_paths(entry: str, plugin_name: str | None = None) -> list[Path]:
     module = entry.split(":", 1)[0].strip()
     if not module:
         raise PackageError("entry must include a module path.")
@@ -110,22 +110,36 @@ def candidate_entry_paths(entry: str) -> list[Path]:
         raise PackageError("entry must include a module path.")
 
     candidates: list[Path] = []
-    base = Path(*parts)
-    candidates.append(base.with_suffix(".py"))
-    candidates.append(base / "__init__.py")
+    seen: set[Path] = set()
+
+    def add(module_parts: list[str]) -> None:
+        if not module_parts:
+            return
+        base = Path(*module_parts)
+        for candidate in (base.with_suffix(".py"), base / "__init__.py"):
+            if candidate not in seen:
+                seen.add(candidate)
+                candidates.append(candidate)
+
+    add(parts)
     if parts[0] != "plugins":
-        prefixed = Path("plugins", *parts)
-        candidates.append(prefixed.with_suffix(".py"))
-        candidates.append(prefixed / "__init__.py")
+        add(["plugins", *parts])
     elif len(parts) > 1:
-        without_prefix = Path(*parts[1:])
-        candidates.append(without_prefix.with_suffix(".py"))
-        candidates.append(without_prefix / "__init__.py")
+        add(parts[1:])
+
+    # Many legacy Shinsekai plugin repositories are flat: plugin.py sits at the
+    # repository root, while the registry entry includes the installed folder name.
+    if plugin_name:
+        normalized_name = plugin_name.replace("-", "_")
+        if parts[0] == normalized_name:
+            add(parts[1:])
+        if len(parts) > 1 and parts[0] == "plugins" and parts[1] == normalized_name:
+            add(parts[2:])
     return candidates
 
 
-def verify_entry_path(source_dir: Path, entry: str) -> Path:
-    for candidate in candidate_entry_paths(entry):
+def verify_entry_path(source_dir: Path, entry: str, plugin_name: str | None = None) -> Path:
+    for candidate in candidate_entry_paths(entry, plugin_name):
         if (source_dir / candidate).is_file():
             return candidate
     raise PackageError(f"entry module does not exist in cleaned package: {entry}")
@@ -186,7 +200,7 @@ def package_local_plugin(
         clean_dir = Path(temp) / name
         clean_dir.mkdir(parents=True, exist_ok=True)
         copy_clean_source(source_dir, clean_dir)
-        verify_entry_path(clean_dir, str(entry.get("entry") or ""))
+        verify_entry_path(clean_dir, str(entry.get("entry") or ""), name)
 
         scan = scan_directory(clean_dir)
         if not scan["pass"]:
