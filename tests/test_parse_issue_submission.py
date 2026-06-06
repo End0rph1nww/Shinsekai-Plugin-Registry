@@ -107,6 +107,13 @@ def test_optional_shinsekai_version_is_preserved() -> None:
     assert entry["shinsekai_version"] == ">=0.2.0"
 
 
+def test_version_payload_field_is_ignored_but_shinsekai_version_is_kept() -> None:
+    entry = build_registry_entry(valid_payload(version="9.9.9", shinsekai_version=">=0.2.0"))
+
+    assert "version" not in entry
+    assert entry["shinsekai_version"] == ">=0.2.0"
+
+
 def test_invalid_repo_url_fails() -> None:
     with pytest.raises(SubmissionError, match="repo must use"):
         build_registry_entry(valid_payload(repo="https://example.com/owner/repo"))
