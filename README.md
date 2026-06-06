@@ -12,13 +12,13 @@ Authors should submit plugin metadata through the Shinsekai plugin market or the
   "desc": "Short description",
   "author": "author",
   "repo": "https://github.com/owner/repo",
-  "entry": "plugins.package.plugin:PluginClass",
+  "shinsekai_version": ">=0.2.0",
   "tags": [],
   "social_link": ""
 }
 ```
 
-The issue workflow parses the fenced JSON block, validates it, updates `plugins.json` on a `submission/issue-{number}` branch, and opens a maintainer-review PR.
+The issue workflow parses the fenced JSON block, validates it, reads the submitted GitHub repository to infer the plugin `name` and `entry`, updates `plugins.json` on a `submission/issue-{number}` branch, and opens a maintainer-review PR. Plugin package version and logo assets are handled by the package CI after the registry PR is merged.
 
 New plugin submissions are listed as Community plugins by default:
 
@@ -48,9 +48,10 @@ If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR va
 
 ## Registry Rules
 
-- `display_name`, `desc`, `author`, `repo`, and `entry` are required for new issue submissions.
+- `display_name`, `desc`, `author`, and `repo` are required for new issue submissions.
 - `repo` in a submission must be `https://github.com/{owner}/{repo}` and must not end with `.git`.
 - `desc` must be 200 characters or fewer.
+- `shinsekai_version` is optional compatibility guidance for users and must be a non-empty string when provided.
 - `tags` must contain at most 5 non-empty strings.
 - `trust_level` must be `community`, `verified`, `verified_update_pending`, or `blocked`.
 - `verified=true` is only valid with `trust_level=verified` and a complete maintainer `review` object.

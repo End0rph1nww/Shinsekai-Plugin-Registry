@@ -92,11 +92,19 @@ def test_name_and_entry_payload_fields_are_inferred_by_ci() -> None:
         valid_payload(
             entry="plugins.manual_entry.plugin:ManualPlugin",
             name="manual_name",
+            version="9.9.9",
         )
     )
 
     assert entry["name"] == "shinsekai_plugin_demo"
     assert entry["entry"] == "plugins.shinsekai_plugin_demo.plugin:DemoPlugin"
+    assert "version" not in entry
+
+
+def test_optional_shinsekai_version_is_preserved() -> None:
+    entry = build_registry_entry(valid_payload(shinsekai_version=">=0.2.0"))
+
+    assert entry["shinsekai_version"] == ">=0.2.0"
 
 
 def test_invalid_repo_url_fails() -> None:

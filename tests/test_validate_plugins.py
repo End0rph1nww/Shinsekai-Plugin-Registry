@@ -76,6 +76,16 @@ def test_desc_length_is_checked_when_desc_field_is_present() -> None:
         validate_registry([valid_entry(desc="x" * 201)])
 
 
+def test_optional_shinsekai_version_is_valid() -> None:
+    validate_registry([valid_entry(shinsekai_version=">=0.2.0")])
+
+
+@pytest.mark.parametrize("value", ["", "   ", 123])
+def test_invalid_optional_shinsekai_version_fails(value: object) -> None:
+    with pytest.raises(RegistryValidationError, match="shinsekai_version"):
+        validate_registry([valid_entry(shinsekai_version=value)])
+
+
 def test_community_trust_level_is_valid() -> None:
     validate_registry([valid_entry(trust_level="community", verified=False, review={"status": "ci_passed"})])
 
