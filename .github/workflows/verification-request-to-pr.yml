@@ -30,7 +30,7 @@ on:
 
 permissions:
   contents: write
-  issues: read
+  issues: write
   pull-requests: write
 
 concurrency:
@@ -146,6 +146,7 @@ jobs:
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
 
       - name: Create or update pull request
+        id: pr
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
@@ -170,10 +171,39 @@ jobs:
             gh pr edit "$BRANCH_NAME" \
               --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
               --body-file "$body"
+            pr_url="$(gh pr view "$BRANCH_NAME" --json url --jq .url)"
           else
-            gh pr create \
+            pr_url="$(gh pr create \
               --head "$BRANCH_NAME" \
               --base main \
               --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
-              --body-file "$body"
+              --body-file "$body")"
           fi
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Close approved verification issue
+        if: github.event_name == 'issues' && steps.pr.outputs.pr_url != ''
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+        run: |
+          set -euo pipefail
+          gh issue comment "$ISSUE_NUMBER" --body "Verification approved. A maintainer review PR has been created: $PR_URL"
+          gh issue close "$ISSUE_NUMBER" --reason completed
+
+  reject-verification:
+    if: >-
+      github.event_name == 'issues' &&
+      github.event.label.name == 'verification-rejected'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close rejected verification issue
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          gh issue comment "$ISSUE_NUMBER" --body "Verification rejected by @$ACTOR. Please update the plugin source, dependencies, package metadata, or request details before opening a new verification request."
+          gh issue close "$ISSUE_NUMBER" --reason "not planned"
