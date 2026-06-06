@@ -77,17 +77,17 @@
       "云端语音"
     ],
     "version": "v0.0.0",
-    "commit_sha": "8c573e8d1df30977217966ea7bd2a3ae5f68a9dc",
-    "updated_at": "2026-06-06T12:30:56Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip",
-    "sha256": "ee39a9bdf0e708fa7af7ed4a179f4aba090d06fa8b8ed64945af48486136518b",
-    "size": 82779,
+    "commit_sha": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
+    "updated_at": "2026-06-06T13:04:45Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
+    "sha256": "f04b1139952b40a1e9853eae8d84d935cc291fccd362bbe7430950295a729b10",
+    "size": 108530,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip",
-      "sha256": "ee39a9bdf0e708fa7af7ed4a179f4aba090d06fa8b8ed64945af48486136518b",
-      "size": 82779,
-      "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8c573e8d1df3.zip"
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip",
+      "sha256": "f04b1139952b40a1e9853eae8d84d935cc291fccd362bbe7430950295a729b10",
+      "size": 108530,
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.0.0/cloud_tts-0.0.0-8f3d262ac388.zip"
     },
     "sec_scan": {
       "static": {
@@ -96,11 +96,12 @@
         "findings": []
       }
     },
+    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.0.0/logo-8f3d262ac388.webp",
     "stars": 2,
     "stargazers_count": 2,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-05-29T07:11:30Z"
+    "repo_updated_at": "2026-06-06T13:04:05Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
