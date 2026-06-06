@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -60,6 +61,20 @@ EXCLUDED_FILES = {".DS_Store"}
 
 class PackageError(ValueError):
     """Raised when a plugin cannot be packaged safely."""
+
+
+PLUGIN_METADATA_PROPERTIES = {
+    "plugin_id": "plugin_id",
+    "plugin_name": "display_name",
+    "plugin_version": "version",
+    "plugin_description": "description",
+    "plugin_author": "author",
+}
+PLUGIN_TITLE_CONTRIBUTIONS = {
+    "FrontendConfigContribution": ("title",),
+    "SettingsUIContribution": ("title", "nav_label"),
+    "ToolsTabContribution": ("title",),
+}
 
 
 def normalize_repo_slug(value: str) -> tuple[str, str]:
@@ -161,6 +176,204 @@ def verify_entry_path(source_dir: Path, entry: str, plugin_name: str | None = No
     raise PackageError(f"entry module does not exist in cleaned package: {entry}")
 
 
+def read_python_tree(path: Path) -> ast.Module:
+    try:
+        return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except SyntaxError as exc:
+        raise PackageError(f"entry module has invalid Python syntax: {path}") from exc
+
+
+def resolve_string_expr(
+    node: ast.AST,
+    *,
+    local_constants: dict[str, str],
+    alias_constants: dict[str, dict[str, str]],
+) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value.strip()
+    if isinstance(node, ast.Name):
+        return local_constants.get(node.id)
+    if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+        return alias_constants.get(node.value.id, {}).get(node.attr)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left = resolve_string_expr(node.left, local_constants=local_constants, alias_constants=alias_constants)
+        right = resolve_string_expr(node.right, local_constants=local_constants, alias_constants=alias_constants)
+        if left is not None and right is not None:
+            return f"{left}{right}".strip()
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for value in node.values:
+            if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+                return None
+            parts.append(value.value)
+        return "".join(parts).strip()
+    return None
+
+
+def extract_string_constants(tree: ast.Module) -> dict[str, str]:
+    constants: dict[str, str] = {}
+    for stmt in tree.body:
+        value_node: ast.AST | None = None
+        targets: list[ast.AST] = []
+        if isinstance(stmt, ast.Assign):
+            value_node = stmt.value
+            targets = list(stmt.targets)
+        elif isinstance(stmt, ast.AnnAssign):
+            value_node = stmt.value
+            targets = [stmt.target]
+        if value_node is None:
+            continue
+        value = resolve_string_expr(value_node, local_constants=constants, alias_constants={})
+        if value is None:
+            continue
+        for target in targets:
+            if isinstance(target, ast.Name):
+                constants[target.id] = value
+    return constants
+
+
+def module_file_candidates(source_dir: Path, module: str, imported_name: str, plugin_name: str) -> list[Path]:
+    parts = [part for part in module.split(".") if part]
+    imported = [imported_name] if imported_name else []
+    normalized_plugin = plugin_name.replace("-", "_")
+    candidates: list[Path] = []
+
+    def add(module_parts: list[str]) -> None:
+        if not module_parts:
+            return
+        base = source_dir.joinpath(*module_parts)
+        for candidate in (base.with_suffix(".py"), base / "__init__.py"):
+            if candidate not in candidates:
+                candidates.append(candidate)
+
+    add([*parts, *imported])
+    if not parts:
+        add(imported)
+    elif len(parts) >= 2 and parts[0] == "plugins" and parts[1] == normalized_plugin:
+        add([*parts[2:], *imported])
+    elif parts[0] == normalized_plugin:
+        add([*parts[1:], *imported])
+    return candidates
+
+
+def load_import_alias_constants(source_dir: Path, tree: ast.Module, plugin_name: str) -> dict[str, dict[str, str]]:
+    aliases: dict[str, dict[str, str]] = {}
+    for stmt in tree.body:
+        if isinstance(stmt, ast.ImportFrom):
+            module = stmt.module or ""
+            for alias in stmt.names:
+                if alias.name == "*":
+                    continue
+                local_name = alias.asname or alias.name
+                for candidate in module_file_candidates(source_dir, module, alias.name, plugin_name):
+                    if candidate.is_file():
+                        aliases[local_name] = extract_string_constants(read_python_tree(candidate))
+                        break
+        elif isinstance(stmt, ast.Import):
+            for alias in stmt.names:
+                local_name = alias.asname or alias.name.split(".")[-1]
+                for candidate in module_file_candidates(source_dir, alias.name, "", plugin_name):
+                    if candidate.is_file():
+                        aliases[local_name] = extract_string_constants(read_python_tree(candidate))
+                        break
+    return aliases
+
+
+def is_property_method(node: ast.AST) -> bool:
+    if not isinstance(node, ast.FunctionDef):
+        return False
+    return any(isinstance(decorator, ast.Name) and decorator.id == "property" for decorator in node.decorator_list)
+
+
+def function_return_string(
+    node: ast.FunctionDef,
+    *,
+    local_constants: dict[str, str],
+    alias_constants: dict[str, dict[str, str]],
+) -> str | None:
+    for stmt in node.body:
+        if isinstance(stmt, ast.Return) and stmt.value is not None:
+            return resolve_string_expr(stmt.value, local_constants=local_constants, alias_constants=alias_constants)
+    return None
+
+
+def entry_class_name(entry: str) -> str:
+    if ":" not in entry:
+        return ""
+    return entry.split(":", 1)[1].strip().rsplit(".", 1)[-1]
+
+
+def metadata_class(tree: ast.Module, entry: str) -> ast.ClassDef | None:
+    classes = [node for node in tree.body if isinstance(node, ast.ClassDef)]
+    desired_name = entry_class_name(entry)
+    if desired_name:
+        for node in classes:
+            if node.name == desired_name:
+                return node
+    for node in classes:
+        if node.name.endswith("Plugin"):
+            return node
+    return classes[0] if len(classes) == 1 else None
+
+
+def call_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    return ""
+
+
+def contribution_display_title(
+    tree: ast.Module,
+    *,
+    local_constants: dict[str, str],
+    alias_constants: dict[str, dict[str, str]],
+) -> str | None:
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        contribution = PLUGIN_TITLE_CONTRIBUTIONS.get(call_name(node.func))
+        if not contribution:
+            continue
+        for field_name in contribution:
+            for keyword in node.keywords:
+                if keyword.arg == field_name:
+                    value = resolve_string_expr(
+                        keyword.value,
+                        local_constants=local_constants,
+                        alias_constants=alias_constants,
+                    )
+                    if value:
+                        return value
+    return None
+
+
+def infer_source_metadata(source_dir: Path, entry_path: Path, entry: dict[str, Any], plugin_name: str) -> dict[str, str]:
+    tree = read_python_tree(source_dir / entry_path)
+    local_constants = extract_string_constants(tree)
+    alias_constants = load_import_alias_constants(source_dir, tree, plugin_name)
+    metadata: dict[str, str] = {}
+
+    cls = metadata_class(tree, str(entry.get("entry") or ""))
+    if cls is not None:
+        for child in cls.body:
+            if not is_property_method(child):
+                continue
+            output_field = PLUGIN_METADATA_PROPERTIES.get(child.name)
+            if not output_field:
+                continue
+            value = function_return_string(child, local_constants=local_constants, alias_constants=alias_constants)
+            if value:
+                metadata[output_field] = value
+
+    if not metadata.get("display_name"):
+        title = contribution_display_title(tree, local_constants=local_constants, alias_constants=alias_constants)
+        if title:
+            metadata["display_name"] = title
+    return metadata
+
+
 def copy_clean_source(source_dir: Path, dest_dir: Path) -> None:
     for path in source_dir.rglob("*"):
         if should_exclude(path, source_dir):
@@ -214,19 +427,26 @@ def package_local_plugin(
     public_base_url: str,
     max_bytes: int = DEFAULT_MAX_BYTES,
     updated_at: str | None = None,
+    fallback_version: str | None = None,
 ) -> dict[str, Any]:
     name = str(entry.get("name") or "").strip()
     if not name:
         raise PackageError("plugin entry is missing name.")
     owner, _repo = normalize_repo_slug(str(entry.get("repo") or ""))
-    version = str(entry.get("version") or "v0.0.0").strip()
 
     output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=f"{name}-clean-") as temp:
         clean_dir = Path(temp) / name
         clean_dir.mkdir(parents=True, exist_ok=True)
         copy_clean_source(source_dir, clean_dir)
-        verify_entry_path(clean_dir, str(entry.get("entry") or ""), name)
+        entry_path = verify_entry_path(clean_dir, str(entry.get("entry") or ""), name)
+        source_metadata = infer_source_metadata(clean_dir, entry_path, entry, name)
+        version = (
+            source_metadata.get("version", "").strip()
+            or str(entry.get("version") or "").strip()
+            or str(fallback_version or "").strip()
+            or "v0.0.0"
+        )
 
         scan = scan_directory(clean_dir)
         if not scan["pass"]:
@@ -280,6 +500,9 @@ def package_local_plugin(
         "package": package,
         "sec_scan": {"static": scan},
     }
+    for field in ("display_name", "plugin_id", "description", "author"):
+        if source_metadata.get(field):
+            result[field] = source_metadata[field]
     if logo_asset:
         result["logo"] = logo_url
         result["logo_asset"] = logo_asset
@@ -473,14 +696,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         entry = find_plugin(load_plugins(args.plugins_json), args.plugin_name)
         owner, repo = normalize_repo_slug(str(entry.get("repo") or ""))
-        version = str(entry.get("version") or "").strip() or None
+        configured_version = str(entry.get("version") or "").strip() or None
+        fallback_version = configured_version
         if args.source_dir:
             source_dir = args.source_dir
             commit_sha = args.commit_sha or "local0000000"
-            if version is None:
-                version = str(entry.get("version") or "v0.0.0")
+            fallback_version = fallback_version or "v0.0.0"
         else:
-            version, ref, commit_sha = resolve_github_ref(owner, repo, version, args.github_token)
+            fallback_version, ref, commit_sha = resolve_github_ref(owner, repo, configured_version, args.github_token)
             archive_path = args.output_dir / f"{args.plugin_name}-source.zip"
             download_github_archive(owner, repo, ref, archive_path, args.github_token)
             extract_root = args.output_dir / f"{args.plugin_name}-source"
@@ -490,7 +713,7 @@ def main(argv: list[str] | None = None) -> int:
             source_dir = extract_archive_to_source(archive_path, extract_root)
 
         entry = dict(entry)
-        entry["version"] = version
+        entry.pop("version", None)
         result = package_local_plugin(
             source_dir=source_dir,
             entry=entry,
@@ -498,6 +721,7 @@ def main(argv: list[str] | None = None) -> int:
             commit_sha=commit_sha,
             public_base_url=args.public_base_url,
             max_bytes=args.max_bytes,
+            fallback_version=fallback_version,
         )
         args.result_file.parent.mkdir(parents=True, exist_ok=True)
         args.result_file.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

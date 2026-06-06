@@ -2,7 +2,7 @@ name: Publish Plugin Packages
 
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 */2 * * *"
   push:
     branches: [main]
     paths:
@@ -79,8 +79,13 @@ jobs:
           mkdir -p "$PACKAGE_RESULTS_DIR" "$PACKAGE_OUTPUT_DIR"
           if [ -n "$PLUGIN_NAMES_INPUT" ]; then
             echo "$PLUGIN_NAMES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//;/^$/d' > selected-plugins.txt
-          elif [ "$METADATA_ONLY" = "true" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+          elif [ "$METADATA_ONLY" = "true" ]; then
             : > selected-plugins.txt
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            python scripts/registry/select_outdated_packages.py \
+              --plugins-json plugins.json \
+              --generated-json plugin_cache_original.json \
+              --output selected-plugins.txt
           elif [ "${{ github.event_name }}" = "push" ]; then
             python scripts/registry/update_generated_registry.py \
               --plugins-json plugins.json \
@@ -102,27 +107,12 @@ jobs:
           fi
           sort -u selected-plugins.txt -o selected-plugins.txt
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "$DRY_RUN" != "true" ] && [ "$FORCE_PACKAGE" != "true" ]; then
-            python - <<'PY'
-          import json
-          from pathlib import Path
-
-          selected = [line.strip() for line in Path("selected-plugins.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
-          cache_path = Path("plugin_cache_original.json")
-          if not cache_path.exists():
-              raise SystemExit(0)
-          data = json.loads(cache_path.read_text(encoding="utf-8"))
-          if isinstance(data, list):
-              entries = [(entry.get("name"), entry) for entry in data if isinstance(entry, dict)]
-          else:
-              values = data.get("plugins", data)
-              entries = [(name, entry) for name, entry in values.items() if isinstance(entry, dict)]
-          packaged = {entry.get("name", name) for name, entry in entries if entry.get("package", {}).get("url")}
-          kept = [name for name in selected if name not in packaged]
-          Path("selected-plugins.txt").write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
-          skipped = sorted(set(selected) - set(kept))
-          if skipped:
-              print("Skipped already packaged plugin(s); set force=true to rebuild: " + ", ".join(skipped))
-          PY
+            selected_csv="$(paste -sd, selected-plugins.txt)"
+            python scripts/registry/select_outdated_packages.py \
+              --plugins-json plugins.json \
+              --generated-json plugin_cache_original.json \
+              --plugin-names "$selected_csv" \
+              --output selected-plugins.txt
           fi
           count="$(sed '/^$/d' selected-plugins.txt | wc -l | tr -d ' ')"
           echo "count=$count" >> "$GITHUB_OUTPUT"
