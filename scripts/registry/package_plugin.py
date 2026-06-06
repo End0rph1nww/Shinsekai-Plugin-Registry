@@ -231,6 +231,7 @@ def package_local_plugin(
         scan = scan_directory(clean_dir)
         if not scan["pass"]:
             raise PackageError(f"static security scan failed: {scan['msg']}")
+        print(f"Static security scan passed for {name}: {scan['msg']}")
 
         r2_key = build_r2_key(owner, name, version, commit_sha)
         zip_path = output_dir / Path(r2_key).name
