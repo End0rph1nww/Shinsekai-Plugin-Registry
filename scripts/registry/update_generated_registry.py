@@ -3,8 +3,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -88,6 +91,82 @@ def load_package_results(package_results_dir: Path) -> list[dict[str, Any]]:
 
 
 PACKAGE_FIELDS = ("version", "commit_sha", "updated_at", "download_url", "sha256", "size", "package", "sec_scan")
+REPO_METADATA_FIELDS = ("stars", "stargazers_count", "forks", "forks_count", "repo_updated_at")
+
+
+def normalize_repo_slug(value: str) -> str:
+    repo = value.strip()
+    if repo.startswith("https://github.com/"):
+        repo = repo.removeprefix("https://github.com/").strip("/")
+    if repo.startswith("github.com/"):
+        repo = repo.removeprefix("github.com/").strip("/")
+    if repo.endswith(".git"):
+        repo = repo[:-4]
+    parts = repo.split("/")
+    if len(parts) != 2 or not all(parts):
+        return ""
+    return f"{parts[0]}/{parts[1]}"
+
+
+def fetch_repo_metadata(repo: str, token: str | None = None) -> dict[str, Any]:
+    slug = normalize_repo_slug(repo)
+    if not slug:
+        return {}
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "shinsekai-plugin-registry-ci"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(f"https://api.github.com/repos/{slug}", headers=headers)
+    with urllib.request.urlopen(request, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    stars = payload.get("stargazers_count")
+    forks = payload.get("forks_count")
+    return {
+        "stars": stars,
+        "stargazers_count": stars,
+        "forks": forks,
+        "forks_count": forks,
+        "repo_updated_at": payload.get("updated_at") or "",
+    }
+
+
+def collect_repo_metadata(registry: Any, token: str | None = None) -> dict[str, dict[str, Any]]:
+    metadata: dict[str, dict[str, Any]] = {}
+    for entry in normalize_registry(registry):
+        name = str(entry["name"])
+        try:
+            result = fetch_repo_metadata(str(entry.get("repo") or ""), token)
+        except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as exc:
+            print(f"warning: failed to fetch repo metadata for {name}: {exc}", file=sys.stderr)
+            continue
+        if result:
+            metadata[name] = result
+    return metadata
+
+
+def merge_repo_metadata(
+    registry: dict[str, dict[str, Any]],
+    repo_metadata: dict[str, dict[str, Any]],
+    base_registry: Any | None = None,
+) -> dict[str, dict[str, Any]]:
+    base = by_name(normalize_registry(base_registry)) if base_registry is not None else {}
+    generated: dict[str, dict[str, Any]] = {}
+    for name, entry in registry.items():
+        merged = dict(entry)
+        metadata = repo_metadata.get(name) or {}
+        if not metadata and name in base:
+            metadata = {field: base[name].get(field) for field in REPO_METADATA_FIELDS if field in base[name]}
+        stars = metadata.get("stars", metadata.get("stargazers_count"))
+        forks = metadata.get("forks", metadata.get("forks_count"))
+        if stars is not None:
+            merged["stars"] = stars
+            merged["stargazers_count"] = stars
+        if forks is not None:
+            merged["forks"] = forks
+            merged["forks_count"] = forks
+        if metadata.get("repo_updated_at"):
+            merged["repo_updated_at"] = metadata["repo_updated_at"]
+        generated[name] = merged
+    return generated
 
 
 def merge_package_results(
@@ -121,6 +200,8 @@ def update_generated_registry(
     md5_output: Path,
     dry_run: bool,
     plugin_names: list[str] | None = None,
+    hydrate_repo_metadata: bool = False,
+    github_token: str | None = None,
 ) -> dict[str, dict[str, Any]]:
     source_registry = load_json(plugins_json)
     registry = normalize_registry(source_registry)
@@ -131,6 +212,12 @@ def update_generated_registry(
             raise RegistryUpdateError(f"unknown plugin(s): {', '.join(missing)}")
     base_registry = load_json(output, default=None) if output.exists() else None
     generated = merge_package_results(source_registry, load_package_results(package_results_dir), base_registry)
+    if hydrate_repo_metadata:
+        generated = merge_repo_metadata(
+            generated,
+            collect_repo_metadata(source_registry, github_token or os.environ.get("GITHUB_TOKEN")),
+            base_registry,
+        )
     if dry_run:
         write_json_stdout(generated)
         return generated
@@ -168,6 +255,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--plugin-name", action="append", default=[])
     parser.add_argument("--plugin-names", default="")
+    parser.add_argument("--skip-repo-metadata", action="store_true")
     parser.add_argument("--detect-changed-from")
     parser.add_argument("--selection-output", type=Path)
     return parser.parse_args(argv)
@@ -195,6 +283,7 @@ def main(argv: list[str] | None = None) -> int:
             md5_output=args.md5_output,
             dry_run=args.dry_run,
             plugin_names=plugin_names,
+            hydrate_repo_metadata=not args.skip_repo_metadata,
         )
     except (RegistryUpdateError, subprocess.CalledProcessError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
