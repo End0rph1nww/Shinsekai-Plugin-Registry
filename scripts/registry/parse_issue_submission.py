@@ -17,7 +17,7 @@ JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
-OPTIONAL_COPY_FIELDS = ("version", "shinsekai_version")
+OPTIONAL_COPY_FIELDS = ("shinsekai_version",)
 
 
 class SubmissionError(ValueError):

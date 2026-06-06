@@ -76,6 +76,13 @@ def test_desc_length_is_checked_when_desc_field_is_present() -> None:
         validate_registry([valid_entry(desc="x" * 201)])
 
 
+def test_shinsekai_version_is_optional_string() -> None:
+    validate_registry([valid_entry(shinsekai_version=">=0.2.0")])
+
+    with pytest.raises(RegistryValidationError, match="shinsekai_version"):
+        validate_registry([valid_entry(shinsekai_version=123)])
+
+
 def test_cli_validates_current_registry_file() -> None:
     repo_root = Path(__file__).resolve().parents[1]
 
