@@ -40,7 +40,7 @@ After a plugin is already listed as Community, authors can open a `Verification 
 
 Maintainers approve a verification request by adding the `verification-approved` label. The `plugin-verification` label is useful for filtering verification requests, but the approval workflow only requires `verification-approved` and a valid verification JSON payload. The label-triggered workflow parses the issue JSON, records the labeling maintainer as `reviewed_by`, updates `plugins.json` on a `verification/{plugin-name}` branch, opens a PR, comments the PR URL back to the issue, and closes the issue as completed. Maintainers still merge that PR manually after reviewing the diff.
 
-Maintainers reject a verification request by adding the `verification-rejected` label. The rejection workflow comments on the issue and closes it as not planned without changing `plugins.json`.
+Maintainers reject a verification request by adding the `verification-rejected` label. The rejection workflow removes the plugin from `plugins.json` on a `delist/{plugin-name}-rejected-verification-issue-{number}` branch, opens a maintainer-review PR, comments the delist PR URL back to the issue, and closes the issue as not planned. Maintainers still merge that delist PR manually after reviewing the diff.
 
 The `Create Plugin Verification PR` workflow also keeps a manual `workflow_dispatch` entry as a fallback for cases where an issue payload needs correction.
 
