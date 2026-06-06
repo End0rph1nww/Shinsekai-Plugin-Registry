@@ -20,6 +20,20 @@ Authors should submit plugin metadata through the Shinsekai plugin market or the
 
 The issue workflow parses the fenced JSON block, validates it, updates `plugins.json` on a `submission/issue-{number}` branch, and opens a maintainer-review PR.
 
+New plugin submissions are listed as Community plugins by default:
+
+```json
+{
+  "trust_level": "community",
+  "verified": false,
+  "review": {
+    "status": "ci_passed"
+  }
+}
+```
+
+This first review is an inclusion check, not a full security audit. Maintainer verification is a separate follow-up path through the `Verification Request` issue template and `Create Plugin Verification PR` workflow. Verified status is bound to the reviewed package commit and version; if a verified plugin publishes a different commit or version, generated registry output is downgraded to `verified_update_pending` until maintainers review it again.
+
 If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR validation, configure a `REGISTRY_BOT_TOKEN` secret with the minimum repository permissions needed for contents, pull requests, and issues. Without that bot token, GitHub may suppress workflows triggered by bot-created pushes.
 
 ## Registry Rules
@@ -28,6 +42,8 @@ If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR va
 - `repo` in a submission must be `https://github.com/{owner}/{repo}` and must not end with `.git`.
 - `desc` must be 200 characters or fewer.
 - `tags` must contain at most 5 non-empty strings.
+- `trust_level` must be `community`, `verified`, `verified_update_pending`, or `blocked`.
+- `verified=true` is only valid with `trust_level=verified` and a complete maintainer `review` object.
 - The generated PR keeps `plugins.json` compatible with the current registry shape.
 
 ## Validate Locally

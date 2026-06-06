@@ -83,6 +83,38 @@ def test_lowest_shinsekai_version_is_optional_string() -> None:
         validate_registry([valid_entry(lowest_shinsekai_version=123)])
 
 
+def test_community_trust_level_is_valid() -> None:
+    validate_registry([valid_entry(trust_level="community", verified=False, review={"status": "ci_passed"})])
+
+
+def test_verified_entry_requires_review_metadata() -> None:
+    with pytest.raises(RegistryValidationError, match="missing reviewed_by"):
+        validate_registry([valid_entry(trust_level="verified", verified=True, review={"status": "maintainer_verified"})])
+
+
+def test_verified_entry_is_valid_with_review_metadata() -> None:
+    validate_registry(
+        [
+            valid_entry(
+                trust_level="verified",
+                verified=True,
+                review={
+                    "status": "maintainer_verified",
+                    "reviewed_by": "RachelForster",
+                    "reviewed_at": "2026-06-06",
+                    "reviewed_commit": "abcdef123456",
+                    "reviewed_version": "v1.0.0",
+                },
+            )
+        ]
+    )
+
+
+def test_verified_true_requires_verified_trust_level() -> None:
+    with pytest.raises(RegistryValidationError, match="verified=true"):
+        validate_registry([valid_entry(trust_level="community", verified=True)])
+
+
 def test_cli_validates_current_registry_file() -> None:
     repo_root = Path(__file__).resolve().parents[1]
 
