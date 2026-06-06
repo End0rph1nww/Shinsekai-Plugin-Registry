@@ -26,7 +26,7 @@ If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR va
 
 - `display_name`, `desc`, `author`, `repo`, and `entry` are required for new issue submissions.
 - `repo` in a submission must be `https://github.com/{owner}/{repo}` and must not end with `.git`.
-- `desc` must be 70 characters or fewer.
+- `desc` must be 200 characters or fewer.
 - `tags` must contain at most 5 non-empty strings.
 - The generated PR keeps `plugins.json` compatible with the current registry shape.
 

@@ -94,8 +94,8 @@ def test_missing_entry_fails() -> None:
 
 
 def test_desc_too_long_fails() -> None:
-    with pytest.raises(SubmissionError, match="70 characters"):
-        build_registry_entry(valid_payload(desc="x" * 71))
+    with pytest.raises(SubmissionError, match="200 characters"):
+        build_registry_entry(valid_payload(desc="x" * 201))
 
 
 def test_update_existing_plugin_in_list_registry() -> None:
