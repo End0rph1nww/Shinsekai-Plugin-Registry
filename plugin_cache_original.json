@@ -84,16 +84,8 @@
     "tags": [
       "云端语音"
     ],
-    "trust_level": "verified",
-    "verified": true,
-    "review": {
-      "status": "maintainer_verified",
-      "reviewed_by": "End0rph1nww",
-      "reviewed_at": "2026-06-06",
-      "reviewed_commit": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
-      "reviewed_version": "v0.0.0",
-      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #2 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/2"
-    },
+    "trust_level": "community",
+    "verified": false,
     "version": "v0.0.0",
     "commit_sha": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
     "updated_at": "2026-06-06T14:17:39Z",
