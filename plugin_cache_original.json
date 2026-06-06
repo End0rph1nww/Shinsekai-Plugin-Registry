@@ -24,28 +24,48 @@
         "msg": "No blocked patterns found.",
         "findings": []
       }
-    }
+    },
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T15:06:42Z"
   },
   "whisper_asr": {
     "name": "whisper_asr",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-whisper-asr",
     "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
-    "entry": "whisper_asr.plugin:WhisperAsrPlugin"
+    "entry": "whisper_asr.plugin:WhisperAsrPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-01T13:21:42Z"
   },
   "chat_ui_customize": {
     "name": "chat_ui_customize",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-chatui-customize",
     "description": "Setting the theme of chat ui",
-    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin"
+    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:58:43Z"
   },
   "playwright_browser": {
     "name": "playwright_browser",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-playwright-browser",
     "description": "Enable your agents to operate Chrome",
-    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin"
+    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:59:41Z"
   },
   "cloud_tts": {
     "name": "cloud_tts",
@@ -75,20 +95,35 @@
         "msg": "No blocked patterns found.",
         "findings": []
       }
-    }
+    },
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 1,
+    "forks_count": 1,
+    "repo_updated_at": "2026-05-29T07:11:30Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
     "author": "umikok7",
     "repo": "umikok7/shinsekai-funasr-wss",
     "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
-    "entry": "funasr_wss.plugin:FunASRWssPlugin"
+    "entry": "funasr_wss.plugin:FunASRWssPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-17T08:23:59Z"
   },
   "bilibili_live": {
     "name": "bilibili_live",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-bilibili-live",
     "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
-    "entry": "bilibili_live.plugin:BilibiliLivePlugin"
+    "entry": "bilibili_live.plugin:BilibiliLivePlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-30T02:28:59Z"
   }
 }
