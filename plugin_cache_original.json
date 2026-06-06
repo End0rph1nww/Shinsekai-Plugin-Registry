@@ -4,7 +4,27 @@
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-moondream-vision",
     "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
-    "entry": "moondream_vision.plugin:MoondreamVisionPlugin"
+    "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
+    "version": "0.2.0",
+    "commit_sha": "5ec359b8fabbdc72aeb3e858acb5e75d1d28fc27",
+    "updated_at": "2026-06-06T12:27:27Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip",
+    "sha256": "fd979ba3c3c89ab7bab3742f87c9b4b5ed3c1d77ffe2707d05cbea40ca40bf39",
+    "size": 27684,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip",
+      "sha256": "fd979ba3c3c89ab7bab3742f87c9b4b5ed3c1d77ffe2707d05cbea40ca40bf39",
+      "size": 27684,
+      "r2_key": "plugins/RachelForster/moondream_vision/0.2.0/moondream_vision-0.2.0-5ec359b8fabb.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    }
   },
   "whisper_asr": {
     "name": "whisper_asr",
@@ -32,7 +52,10 @@
     "author": "End0rph1nww",
     "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
     "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
-    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin"
+    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
+    "tags": [
+      "云端语音"
+    ]
   },
   "funasr_wss": {
     "name": "funasr_wss",
