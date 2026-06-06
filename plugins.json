@@ -33,7 +33,19 @@
     "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
     "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
     "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
-    "tags": ["云端语音"]
+    "tags": [
+      "云端语音"
+    ],
+    "trust_level": "verified",
+    "verified": true,
+    "review": {
+      "status": "maintainer_verified",
+      "reviewed_by": "End0rph1nww",
+      "reviewed_at": "2026-06-06",
+      "reviewed_commit": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
+      "reviewed_version": "v0.0.0",
+      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #2 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/2"
+    }
   },
   {
     "name": "funasr_wss",
