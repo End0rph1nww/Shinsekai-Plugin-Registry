@@ -53,3 +53,8 @@ Clients and the plugin market should prefer the R2 `registry/plugin_cache_origin
 The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.
 
 Plugin logos can be committed directly in a plugin repository. During packaging, the workflow looks for `logo.png`, `logo.jpg`, `logo.jpeg`, or `logo.webp` in the repository root or common asset folders such as `assets/`, `static/`, `public/`, `resources/`, `images/`, and `img/`. Valid logos are uploaded to R2 under `assets/` and the generated registry receives the public `logo` URL.
+
+The package workflow runs two security gates before any R2 upload:
+
+- the built-in static scan blocks obvious credential literals, suspicious exfiltration endpoints, and dangerous Python calls such as raw `eval`, `exec`, `os.system`, or `subprocess(..., shell=True)`;
+- ClamAV scans the package output, including downloaded source archives and generated plugin zips.
