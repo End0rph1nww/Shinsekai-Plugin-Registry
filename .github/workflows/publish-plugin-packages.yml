@@ -189,7 +189,22 @@ jobs:
           from pathlib import Path
           for path in sorted(Path("package-results").glob("*.json")):
               data = json.loads(path.read_text(encoding="utf-8"))
-              print("aws s3 cp " + json.dumps(data["zip_path"]) + " " + json.dumps("s3://${R2_BUCKET}/" + data["package"]["r2_key"]) + " --endpoint-url " + json.dumps("https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"))
+              endpoint = json.dumps("https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com")
+              print("aws s3 cp " + json.dumps(data["zip_path"]) + " " + json.dumps("s3://${R2_BUCKET}/" + data["package"]["r2_key"]) + " --endpoint-url " + endpoint)
+              logo = data.get("logo_asset") or {}
+              if logo.get("source_path") and logo.get("r2_key"):
+                  print(
+                      "aws s3 cp "
+                      + json.dumps(logo["source_path"])
+                      + " "
+                      + json.dumps("s3://${R2_BUCKET}/" + logo["r2_key"])
+                      + " --endpoint-url "
+                      + endpoint
+                      + " --content-type "
+                      + json.dumps(logo.get("content_type") or "application/octet-stream")
+                      + " --cache-control "
+                      + json.dumps("max-age=300, must-revalidate")
+                  )
           PY
           bash upload-commands.sh
         env:

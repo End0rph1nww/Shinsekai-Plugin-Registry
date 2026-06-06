@@ -11,6 +11,7 @@ import scripts.registry.package_plugin as package_plugin_module
 from scripts.registry.package_plugin import (
     PackageError,
     build_r2_key,
+    build_r2_logo_key,
     download_github_archive,
     extract_archive_to_source,
     load_plugins,
@@ -62,6 +63,12 @@ def test_build_r2_key_uses_version_without_v_and_commit12() -> None:
     assert key == "plugins/owner/demo_plugin/1.2.3/demo_plugin-1.2.3-abcdef123456.zip"
 
 
+def test_build_r2_logo_key_uses_assets_namespace_and_extension() -> None:
+    key = build_r2_logo_key("owner", "demo_plugin", "v1.2.3", "abcdef1234567890", ".png")
+
+    assert key == "assets/owner/demo_plugin/1.2.3/logo-abcdef123456.png"
+
+
 def test_verify_entry_path_accepts_plugins_prefixed_module(tmp_path: Path) -> None:
     source = make_plugin(tmp_path)
 
@@ -92,6 +99,8 @@ def test_verify_entry_path_rejects_missing_module(tmp_path: Path) -> None:
 
 def test_package_local_plugin_builds_clean_zip_and_metadata(tmp_path: Path) -> None:
     source = make_plugin(tmp_path)
+    logo_bytes = b"\x89PNG\r\n\x1a\nlogo"
+    (source / "logo.png").write_bytes(logo_bytes)
     output_dir = tmp_path / "out"
     entry = {
         "name": "demo_plugin",
@@ -114,6 +123,12 @@ def test_package_local_plugin_builds_clean_zip_and_metadata(tmp_path: Path) -> N
     assert result["version"] == "v1.0.0"
     assert result["package"]["r2_key"] == "plugins/owner/demo_plugin/1.0.0/demo_plugin-1.0.0-abcdef123456.zip"
     assert result["download_url"] == "https://cdn.example.com/plugins/owner/demo_plugin/1.0.0/demo_plugin-1.0.0-abcdef123456.zip"
+    assert result["logo"] == "https://cdn.example.com/assets/owner/demo_plugin/1.0.0/logo-abcdef123456.png"
+    assert result["logo_asset"]["source_path"] == str(source / "logo.png")
+    assert result["logo_asset"]["r2_key"] == "assets/owner/demo_plugin/1.0.0/logo-abcdef123456.png"
+    assert result["logo_asset"]["content_type"] == "image/png"
+    assert result["logo_asset"]["size"] == len(logo_bytes)
+    assert len(result["logo_asset"]["sha256"]) == 64
     assert result["sec_scan"]["static"]["pass"] is True
 
     zip_path = Path(result["zip_path"])
