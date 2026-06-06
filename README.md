@@ -38,7 +38,7 @@ This first review is an inclusion check, not a full security audit. Maintainer v
 
 After a plugin is already listed as Community, authors can open a `Verification Request` issue from the plugin market. The issue contains the reviewed plugin name, version, commit, package hash, and package URL.
 
-Maintainers approve a verification request by adding the `verification-approved` label to an issue that already has the `plugin-verification` label. The label-triggered workflow parses the issue JSON, records the labeling maintainer as `reviewed_by`, updates `plugins.json` on a `verification/{plugin-name}` branch, and opens a PR. Maintainers still merge that PR manually after reviewing the diff.
+Maintainers approve a verification request by adding the `verification-approved` label. The `plugin-verification` label is useful for filtering verification requests, but the approval workflow only requires `verification-approved` and a valid verification JSON payload. The label-triggered workflow parses the issue JSON, records the labeling maintainer as `reviewed_by`, updates `plugins.json` on a `verification/{plugin-name}` branch, and opens a PR. Maintainers still merge that PR manually after reviewing the diff.
 
 The `Create Plugin Verification PR` workflow also keeps a manual `workflow_dispatch` entry as a fallback for cases where an issue payload needs correction.
 
