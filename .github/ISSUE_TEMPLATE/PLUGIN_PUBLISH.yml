@@ -19,7 +19,6 @@ body:
           "desc": "Short description, 200 characters or fewer",
           "author": "author",
           "repo": "https://github.com/owner/repo",
-          "entry": "plugins.package.plugin:PluginClass",
           "tags": [],
           "social_link": ""
         }

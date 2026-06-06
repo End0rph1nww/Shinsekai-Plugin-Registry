@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -12,8 +16,8 @@ from urllib.parse import urlparse
 JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
-REQUIRED_FIELDS = ("display_name", "desc", "author", "repo", "entry")
-OPTIONAL_COPY_FIELDS = ("logo", "version", "shinsekai_version", "support_platforms")
+REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
+OPTIONAL_COPY_FIELDS = ("version", "shinsekai_version")
 
 
 class SubmissionError(ValueError):
@@ -56,7 +60,7 @@ def parse_github_repo_url(value: Any) -> str:
 
 
 def normalize_plugin_name(value: str) -> str:
-    name = value.strip().replace("-", "_")
+    name = value.strip().replace("-", "_").lower()
     if not name:
         raise SubmissionError("Plugin name cannot be empty.")
     if not PLUGIN_NAME_RE.fullmatch(name):
@@ -90,6 +94,65 @@ def normalize_tags(value: Any) -> list[str]:
     return tags
 
 
+def first_plugin_class(plugin_file: Path) -> str:
+    try:
+        tree = ast.parse(plugin_file.read_text(encoding="utf-8", errors="ignore"))
+    except SyntaxError:
+        return "Plugin"
+    classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
+    for name in classes:
+        if name.lower().endswith("plugin"):
+            return name
+    return classes[0] if classes else "Plugin"
+
+
+def infer_entry_from_source(source_dir: Path, plugin_name: str) -> str:
+    candidates = sorted(
+        [
+            path
+            for path in source_dir.rglob("plugin.py")
+            if not any(part in {".git", "__pycache__", ".venv", "venv", "node_modules"} for part in path.relative_to(source_dir).parts)
+        ],
+        key=lambda path: (len(path.relative_to(source_dir).parts), path.as_posix()),
+    )
+    if not candidates:
+        raise SubmissionError("entry is missing and CI could not find plugin.py in the repository.")
+    plugin_file = candidates[0]
+    class_name = first_plugin_class(plugin_file)
+    rel = plugin_file.relative_to(source_dir).with_suffix("")
+    module = ".".join(rel.parts)
+    if module == "plugin":
+        module = f"plugins.{plugin_name.replace('-', '_')}.plugin"
+    elif not module.startswith("plugins."):
+        module = f"plugins.{module}"
+    return f"{module}:{class_name}"
+
+
+def infer_name_from_entry(entry: str, fallback: str) -> str:
+    module = entry.split(":", 1)[0].strip()
+    parts = [part for part in module.split(".") if part]
+    if len(parts) >= 2 and parts[0] == "plugins":
+        return normalize_plugin_name(parts[1])
+    return normalize_plugin_name(fallback)
+
+
+def clone_repo_to_temp(repo_slug: str) -> Path:
+    temp_dir = Path(tempfile.mkdtemp(prefix="shinsekai-plugin-submission-"))
+    try:
+        subprocess.run(
+            ["git", "clone", "--depth", "1", f"https://github.com/{repo_slug}.git", str(temp_dir)],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        detail = (exc.stderr or exc.stdout or "").strip()
+        raise SubmissionError(f"could not clone plugin repository for CI metadata inference. {detail}") from exc
+    return temp_dir
+
+
 def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     for field in REQUIRED_FIELDS:
         require_string(payload, field)
@@ -99,13 +162,14 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     if len(desc) > 200:
         raise SubmissionError("desc must be 200 characters or fewer.")
 
-    name_value = payload.get("name")
-    if name_value is None or name_value == "":
-        name = plugin_name_from_repo(repo_slug)
-    elif not isinstance(name_value, str):
-        raise SubmissionError("name must be a string when provided.")
-    else:
-        name = normalize_plugin_name(name_value)
+    repo_name = plugin_name_from_repo(repo_slug)
+
+    source_dir = clone_repo_to_temp(repo_slug)
+    try:
+        entry_value = infer_entry_from_source(source_dir, repo_name)
+        name = infer_name_from_entry(entry_value, repo_name)
+    finally:
+        shutil.rmtree(source_dir, ignore_errors=True)
 
     entry = {
         "name": name,
@@ -115,7 +179,7 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
         "repo": repo_slug,
         "description": desc,
         "desc": desc,
-        "entry": require_string(payload, "entry"),
+        "entry": entry_value,
     }
 
     tags = normalize_tags(payload.get("tags"))
