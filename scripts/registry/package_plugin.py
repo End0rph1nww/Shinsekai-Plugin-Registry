@@ -442,8 +442,8 @@ def package_local_plugin(
         entry_path = verify_entry_path(clean_dir, str(entry.get("entry") or ""), name)
         source_metadata = infer_source_metadata(clean_dir, entry_path, entry, name)
         version = (
-            str(entry.get("version") or "").strip()
-            or source_metadata.get("version", "").strip()
+            source_metadata.get("version", "").strip()
+            or str(entry.get("version") or "").strip()
             or str(fallback_version or "").strip()
             or "v0.0.0"
         )
@@ -713,10 +713,7 @@ def main(argv: list[str] | None = None) -> int:
             source_dir = extract_archive_to_source(archive_path, extract_root)
 
         entry = dict(entry)
-        if configured_version:
-            entry["version"] = configured_version
-        else:
-            entry.pop("version", None)
+        entry.pop("version", None)
         result = package_local_plugin(
             source_dir=source_dir,
             entry=entry,

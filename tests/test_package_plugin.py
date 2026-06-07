@@ -196,7 +196,7 @@ def test_package_local_plugin_prefers_plugin_py_version_when_registry_version_mi
     assert result["package"]["r2_key"] == "plugins/owner/demo_plugin/0.2.1/demo_plugin-0.2.1-abcdef123456.zip"
 
 
-def test_package_local_plugin_keeps_explicit_registry_version(tmp_path: Path) -> None:
+def test_package_local_plugin_prefers_source_version_over_registry_ref(tmp_path: Path) -> None:
     source = tmp_path / "source"
     source.mkdir()
     (source / "plugin.py").write_text(
@@ -230,7 +230,7 @@ def test_package_local_plugin_keeps_explicit_registry_version(tmp_path: Path) ->
         fallback_version="v9.9.9",
     )
 
-    assert result["version"] == "v3.0.0"
+    assert result["version"] == "0.2.1"
     assert result["display_name"] == "Demo Display"
 
 
