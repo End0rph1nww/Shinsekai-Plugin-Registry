@@ -37,4 +37,24 @@ python -m pytest tests -q
 python scripts\registry\validate_plugins.py plugins.json
 ```
 
-This PR stage only implements submission validation and maintainer-review PR creation. Packaging approved plugins to R2 belongs to the follow-up Registry package CI stage.
+## Generated Registry and R2 Distribution
+
+Maintainers approve submissions by merging the generated registry PR. The package workflow then builds clean plugin zips, uploads them to R2, updates `plugin_cache_original.json` and `plugins-md5.json`, and mirrors those generated JSON files to R2:
+
+```text
+registry/plugin_cache_original.json
+registry/plugins-md5.json
+plugins/<owner>/<plugin>/<version>/<zip>
+assets/<owner>/<plugin>/<version>/logo-<commit>.png
+```
+
+Clients and the plugin market should use the R2 `registry/plugin_cache_original.json` URL as the production registry source. The generated JSON committed back to GitHub is kept for review and rollback visibility, not as the production distribution URL.
+
+The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.
+
+Plugin logos can be committed directly in a plugin repository. During packaging, the workflow looks for `logo.png`, `logo.jpg`, `logo.jpeg`, or `logo.webp` in the repository root or common asset folders such as `assets/`, `static/`, `public/`, `resources/`, `images/`, and `img/`. Valid logos are uploaded to R2 under `assets/` and the generated registry receives the public `logo` URL.
+
+The package workflow runs two security gates before any R2 upload:
+
+- the built-in static scan blocks obvious credential literals, suspicious exfiltration endpoints, and dangerous Python calls such as raw `eval`, `exec`, `os.system`, or `subprocess(..., shell=True)`;
+- ClamAV scans the package output, including downloaded source archives and generated plugin zips.

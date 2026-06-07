@@ -28,6 +28,13 @@ def test_object_shape_is_valid() -> None:
     validate_registry({"demo_plugin": valid_entry()})
 
 
+def test_object_shape_uses_key_as_name() -> None:
+    entry = valid_entry()
+    entry.pop("name")
+
+    validate_registry({"demo_plugin": entry})
+
+
 def test_plugins_object_shape_is_valid() -> None:
     validate_registry({"plugins": {"demo_plugin": valid_entry()}})
 

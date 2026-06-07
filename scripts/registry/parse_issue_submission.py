@@ -221,7 +221,7 @@ def load_registry(path: Path) -> Any:
     if not path.exists():
         return []
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         raise SubmissionError(f"{path} is not valid JSON: {exc.msg}.") from exc
 
