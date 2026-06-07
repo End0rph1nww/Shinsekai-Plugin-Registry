@@ -2,7 +2,7 @@ name: Create Plugin Registry PR From Issue
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -114,7 +114,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
         run: gh issue comment "$ISSUE_NUMBER" --body "Plugin submission is valid, but it does not change plugins.json."
 
-      - name: Create or update pull request
+      - name: Create or update pull request and close source issue
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
@@ -134,4 +134,12 @@ jobs:
               --title "feat(plugin-registry): add plugin from issue #$ISSUE_NUMBER" \
               --body-file submission-summary.txt)"
           fi
-          gh issue comment "$ISSUE_NUMBER" --body "Plugin submission passed validation. Registry PR: $pr_url"
+          {
+            echo "Plugin submission passed validation and a Registry PR is ready for maintainer review:"
+            echo
+            echo "$pr_url"
+            echo
+            echo "Closing this issue because review should continue in the Registry PR."
+          } > submission-created-comment.md
+          gh issue comment "$ISSUE_NUMBER" --body-file submission-created-comment.md
+          gh issue close "$ISSUE_NUMBER" --reason completed

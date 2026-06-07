@@ -17,7 +17,7 @@ JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
-OPTIONAL_COPY_FIELDS = ("shinsekai_version",)
+OPTIONAL_COPY_FIELDS = ("lowest_shinsekai_version",)
 
 
 class SubmissionError(ValueError):
@@ -94,16 +94,34 @@ def normalize_tags(value: Any) -> list[str]:
     return tags
 
 
+def _base_name(base: ast.expr) -> str:
+    if isinstance(base, ast.Name):
+        return base.id
+    if isinstance(base, ast.Attribute):
+        return base.attr
+    if isinstance(base, ast.Subscript):
+        return _base_name(base.value)
+    return ""
+
+
+def _inherits_plugin_base(node: ast.ClassDef) -> bool:
+    return any(_base_name(base) == "PluginBase" for base in node.bases)
+
+
 def first_plugin_class(plugin_file: Path) -> str:
     try:
         tree = ast.parse(plugin_file.read_text(encoding="utf-8", errors="ignore"))
-    except SyntaxError:
-        return "Plugin"
-    classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
-    for name in classes:
-        if name.lower().endswith("plugin"):
-            return name
-    return classes[0] if classes else "Plugin"
+    except SyntaxError as exc:
+        location = f" line {exc.lineno}" if exc.lineno else ""
+        raise SubmissionError(f"{plugin_file}: plugin.py has a syntax error{location}: {exc.msg}.") from exc
+
+    classes = [node for node in tree.body if isinstance(node, ast.ClassDef) and _inherits_plugin_base(node)]
+    for node in classes:
+        if node.name.lower().endswith("plugin"):
+            return node.name
+    if classes:
+        return classes[0].name
+    raise SubmissionError(f"{plugin_file}: no PluginBase subclass found for entry inference.")
 
 
 def infer_entry_from_source(source_dir: Path, plugin_name: str) -> str:

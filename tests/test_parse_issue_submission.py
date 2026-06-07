@@ -22,7 +22,7 @@ from scripts.registry.parse_issue_submission import (
 def fake_repo_clone(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     template = tmp_path / "template-repo"
     template.mkdir(parents=True)
-    (template / "plugin.py").write_text("class DemoPlugin:\n    pass\n", encoding="utf-8")
+    (template / "plugin.py").write_text("class DemoPlugin(PluginBase):\n    pass\n", encoding="utf-8")
     clone_index = 0
 
     def clone_repo_to_temp(_repo_slug: str) -> Path:
@@ -96,11 +96,11 @@ def test_name_and_entry_payload_fields_are_inferred_by_ci() -> None:
     assert entry["entry"] == "plugins.shinsekai_plugin_demo.plugin:DemoPlugin"
 
 
-def test_version_payload_field_is_ignored_but_shinsekai_version_is_kept() -> None:
-    entry = build_registry_entry(valid_payload(version="9.9.9", shinsekai_version=">=0.2.0"))
+def test_version_payload_field_is_ignored_but_lowest_shinsekai_version_is_kept() -> None:
+    entry = build_registry_entry(valid_payload(version="9.9.9", lowest_shinsekai_version=">=0.2.0"))
 
     assert "version" not in entry
-    assert entry["shinsekai_version"] == ">=0.2.0"
+    assert entry["lowest_shinsekai_version"] == ">=0.2.0"
 
 
 def test_invalid_repo_url_fails() -> None:
@@ -125,13 +125,27 @@ def test_entry_is_inferred_from_repository_source() -> None:
 
 
 def test_root_plugin_uses_normalized_repo_name(tmp_path: Path) -> None:
-    (tmp_path / "plugin.py").write_text("class MarketPlugin:\n    pass\n", encoding="utf-8")
+    (tmp_path / "plugin.py").write_text("class MarketPlugin(PluginBase):\n    pass\n", encoding="utf-8")
     repo_name = plugin_name_from_repo("owner/Shinsekai-Plugin-Market")
     entry = infer_entry_from_source(tmp_path, repo_name)
 
     assert repo_name == "shinsekai_plugin_market"
     assert entry == "plugins.shinsekai_plugin_market.plugin:MarketPlugin"
     assert infer_name_from_entry(entry, repo_name) == "shinsekai_plugin_market"
+
+
+def test_entry_inference_requires_valid_python(tmp_path: Path) -> None:
+    (tmp_path / "plugin.py").write_text("class BrokenPlugin(PluginBase):\n", encoding="utf-8")
+
+    with pytest.raises(SubmissionError, match="syntax error"):
+        infer_entry_from_source(tmp_path, "broken_plugin")
+
+
+def test_entry_inference_requires_plugin_base_subclass(tmp_path: Path) -> None:
+    (tmp_path / "plugin.py").write_text("class NotAPlugin:\n    pass\n", encoding="utf-8")
+
+    with pytest.raises(SubmissionError, match="no PluginBase subclass"):
+        infer_entry_from_source(tmp_path, "not_a_plugin")
 
 
 def test_desc_too_long_fails() -> None:

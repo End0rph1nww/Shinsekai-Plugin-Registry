@@ -100,11 +100,11 @@ def validate_entry(entry: dict[str, Any]) -> None:
     if display_name is not None and (not isinstance(display_name, str) or not display_name.strip()):
         raise RegistryValidationError(f"{name}: display_name must be a non-empty string when provided.")
 
-    shinsekai_version = entry.get("shinsekai_version")
-    if shinsekai_version is not None and (
-        not isinstance(shinsekai_version, str) or not shinsekai_version.strip()
+    lowest_shinsekai_version = entry.get("lowest_shinsekai_version")
+    if lowest_shinsekai_version is not None and (
+        not isinstance(lowest_shinsekai_version, str) or not lowest_shinsekai_version.strip()
     ):
-        raise RegistryValidationError(f"{name}: shinsekai_version must be a non-empty string when provided.")
+        raise RegistryValidationError(f"{name}: lowest_shinsekai_version must be a non-empty string when provided.")
 
     tags = entry.get("tags", [])
     if tags is None:

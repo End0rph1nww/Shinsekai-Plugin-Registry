@@ -12,7 +12,7 @@ Authors should submit plugin metadata through the Shinsekai plugin market or the
   "desc": "Short description",
   "author": "author",
   "repo": "https://github.com/owner/repo",
-  "entry": "plugins.package.plugin:PluginClass",
+  "lowest_shinsekai_version": ">=0.2.0",
   "tags": [],
   "social_link": ""
 }
@@ -24,7 +24,7 @@ If branch pushes from the default `GITHUB_TOKEN` should trigger downstream PR va
 
 ## Registry Rules
 
-- `display_name`, `desc`, `author`, `repo`, and `entry` are required for new issue submissions.
+- `display_name`, `desc`, `author`, and `repo` are required for new issue submissions.
 - `repo` in a submission must be `https://github.com/{owner}/{repo}` and must not end with `.git`.
 - `desc` must be 200 characters or fewer.
 - `tags` must contain at most 5 non-empty strings.
