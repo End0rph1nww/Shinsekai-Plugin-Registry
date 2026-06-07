@@ -1,0 +1,38 @@
+name: Verification Request
+description: Request maintainer verification for an already listed Shinsekai plugin
+title: "[Verification] YOUR PLUGIN NAME"
+labels: ["plugin-verification"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request maintainer verification only after the plugin is already listed as a Community plugin.
+        Verification is not automatic. Maintainers review source, dependencies, entry point, package diff, and runtime risk before granting the Verified badge.
+        Maintainers approve by adding the `verification-approved` label; the workflow will open a verification PR.
+        Maintainers reject by adding the `verification-rejected` label; the workflow will comment and close this request.
+  - type: textarea
+    id: verification-info
+    attributes:
+      label: Verification Info
+      description: Keep this JSON block intact. The plugin market may prefill these fields.
+      value: |
+        ```json
+        {
+          "plugin_name": "shinsekai_plugin",
+          "repo": "https://github.com/owner/repo",
+          "version": "v1.0.0",
+          "commit_sha": "",
+          "package_sha256": "",
+          "package_url": "",
+          "reason": "Why this plugin should be verified"
+        }
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: reviewer-notes
+    attributes:
+      label: Notes for Maintainers
+      description: Describe permissions, network usage, sensitive config access, dependencies, and expected runtime behavior.
+    validations:
+      required: false

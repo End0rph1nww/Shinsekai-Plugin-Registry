@@ -1,0 +1,309 @@
+name: Create Plugin Verification PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin_name:
+        description: Registry plugin name to mark verified
+        required: true
+      reviewed_by:
+        description: Maintainer or reviewer name
+        required: true
+      reviewed_at:
+        description: Review date in YYYY-MM-DD. Empty uses today in UTC.
+        required: false
+        default: ""
+      reviewed_commit:
+        description: Reviewed commit SHA. Empty uses current generated registry commit_sha.
+        required: false
+        default: ""
+      reviewed_version:
+        description: Reviewed version. Empty uses current generated registry version.
+        required: false
+        default: ""
+      notes:
+        description: Short review notes
+        required: false
+        default: ""
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: plugin-verification-${{ github.event.inputs.plugin_name || github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  verification-pr:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issues' &&
+        github.event.label.name == 'verification-approved'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Parse verification issue
+        id: issue
+        if: github.event_name == 'issues'
+        run: python scripts/registry/parse_verification_issue.py --event-path "$GITHUB_EVENT_PATH" --output "$GITHUB_OUTPUT"
+
+      - name: Resolve verification inputs
+        id: verify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_PLUGIN_NAME: ${{ github.event.inputs.plugin_name }}
+          MANUAL_REVIEWED_BY: ${{ github.event.inputs.reviewed_by }}
+          MANUAL_REVIEWED_AT: ${{ github.event.inputs.reviewed_at }}
+          MANUAL_REVIEWED_COMMIT: ${{ github.event.inputs.reviewed_commit }}
+          MANUAL_REVIEWED_VERSION: ${{ github.event.inputs.reviewed_version }}
+          MANUAL_NOTES: ${{ github.event.inputs.notes }}
+          ISSUE_PLUGIN_NAME: ${{ steps.issue.outputs.plugin_name }}
+          ISSUE_REVIEWED_BY: ${{ github.actor }}
+          ISSUE_REVIEWED_COMMIT: ${{ steps.issue.outputs.reviewed_commit }}
+          ISSUE_REVIEWED_VERSION: ${{ steps.issue.outputs.reviewed_version }}
+          ISSUE_NOTES: ${{ steps.issue.outputs.notes }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            {
+              echo "plugin_name=$MANUAL_PLUGIN_NAME"
+              echo "reviewed_by=$MANUAL_REVIEWED_BY"
+              echo "reviewed_at=$MANUAL_REVIEWED_AT"
+              echo "reviewed_commit=$MANUAL_REVIEWED_COMMIT"
+              echo "reviewed_version=$MANUAL_REVIEWED_VERSION"
+              echo "notes=$MANUAL_NOTES"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "plugin_name=$ISSUE_PLUGIN_NAME"
+              echo "reviewed_by=$ISSUE_REVIEWED_BY"
+              echo "reviewed_at="
+              echo "reviewed_commit=$ISSUE_REVIEWED_COMMIT"
+              echo "reviewed_version=$ISSUE_REVIEWED_VERSION"
+              echo "notes=$ISSUE_NOTES"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mark plugin verified
+        env:
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          REVIEWED_BY: ${{ steps.verify.outputs.reviewed_by }}
+          REVIEWED_AT: ${{ steps.verify.outputs.reviewed_at }}
+          REVIEWED_COMMIT: ${{ steps.verify.outputs.reviewed_commit }}
+          REVIEWED_VERSION: ${{ steps.verify.outputs.reviewed_version }}
+          NOTES: ${{ steps.verify.outputs.notes }}
+        run: |
+          set -euo pipefail
+          python scripts/registry/mark_plugin_verified.py \
+            --plugins-json plugins.json \
+            --generated-registry plugin_cache_original.json \
+            --output plugins.json \
+            --plugin-name "$PLUGIN_NAME" \
+            --reviewed-by "$REVIEWED_BY" \
+            --reviewed-at "$REVIEWED_AT" \
+            --reviewed-commit "$REVIEWED_COMMIT" \
+            --reviewed-version "$REVIEWED_VERSION" \
+            --notes "$NOTES"
+
+      - name: Validate registry
+        run: python scripts/registry/validate_plugins.py plugins.json
+
+      - name: Commit verification branch
+        id: commit
+        env:
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -n "$ISSUE_NUMBER" ]; then
+            branch="verification/$PLUGIN_NAME-issue-$ISSUE_NUMBER"
+          else
+            branch="verification/$PLUGIN_NAME-manual-$RUN_ID"
+          fi
+          git config user.name "shinsekai-registry-bot"
+          git config user.email "shinsekai-registry-bot@users.noreply.github.com"
+          git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
+          git switch -C "$branch"
+          git add plugins.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(plugin-registry): mark $PLUGIN_NAME verified"
+          git push origin "HEAD:$branch" --force-with-lease
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update pull request
+        id: pr
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          BRANCH_NAME: ${{ steps.commit.outputs.branch }}
+          PLUGIN_NAME: ${{ steps.verify.outputs.plugin_name }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          {
+            echo "Maintainer verification update for \`$PLUGIN_NAME\`."
+            echo
+            echo "This PR grants the Verified badge for the reviewed commit/version recorded in \`plugins.json\`."
+            if [ -n "$ISSUE_URL" ]; then
+              echo
+              echo "Verification request: $ISSUE_URL"
+            fi
+            echo
+            echo "Merging this PR will trigger the package workflow on main and refresh the generated registry."
+          } > "$body"
+          existing_pr_number="$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing_pr_number" ]; then
+            gh pr edit "$existing_pr_number" \
+              --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
+              --body-file "$body"
+            pr_url="$(gh pr view "$existing_pr_number" --json url --jq .url)"
+          else
+            pr_url="$(gh pr create \
+              --head "$BRANCH_NAME" \
+              --base main \
+              --title "chore(plugin-registry): mark $PLUGIN_NAME verified" \
+              --body-file "$body")"
+          fi
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Close approved verification issue
+        if: github.event_name == 'issues' && steps.pr.outputs.pr_url != ''
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+        run: |
+          set -euo pipefail
+          gh issue comment "$ISSUE_NUMBER" --body "Verification approved. A maintainer review PR has been created: $PR_URL"
+          gh issue close "$ISSUE_NUMBER" --reason completed
+
+  reject-verification:
+    if: >-
+      github.event_name == 'issues' &&
+      github.event.label.name == 'verification-rejected'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Parse verification issue
+        id: issue
+        run: python scripts/registry/parse_verification_issue.py --event-path "$GITHUB_EVENT_PATH" --output "$GITHUB_OUTPUT"
+
+      - name: Delist rejected plugin
+        env:
+          PLUGIN_NAME: ${{ steps.issue.outputs.plugin_name }}
+        run: |
+          set -euo pipefail
+          python scripts/registry/delist_plugin.py \
+            --plugins-json plugins.json \
+            --output plugins.json \
+            --plugin-name "$PLUGIN_NAME"
+
+      - name: Validate registry
+        run: python scripts/registry/validate_plugins.py plugins.json
+
+      - name: Commit delist branch
+        id: commit
+        env:
+          PLUGIN_NAME: ${{ steps.issue.outputs.plugin_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          branch_slug="$(printf '%s' "$PLUGIN_NAME" | tr -c 'A-Za-z0-9._-' '-' | sed 's/^-*//; s/-*$//; s/--*/-/g')"
+          if [ -z "$branch_slug" ]; then
+            branch_slug="plugin"
+          fi
+          branch="delist/$branch_slug-rejected-verification-issue-$ISSUE_NUMBER"
+          git config user.name "shinsekai-registry-bot"
+          git config user.email "shinsekai-registry-bot@users.noreply.github.com"
+          git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
+          git switch -C "$branch"
+          git add plugins.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(plugin-registry): delist $PLUGIN_NAME after rejected verification"
+          git push origin "HEAD:$branch" --force-with-lease
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update pull request
+        id: pr
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          BRANCH_NAME: ${{ steps.commit.outputs.branch }}
+          PLUGIN_NAME: ${{ steps.issue.outputs.plugin_name }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          {
+            echo "Security verification for \`$PLUGIN_NAME\` was rejected by a maintainer."
+            echo
+            echo "This PR removes the plugin from \`plugins.json\` so it is no longer listed in the Registry."
+            echo
+            echo "Verification request: $ISSUE_URL"
+            echo
+            echo "Merging this PR will trigger the package workflow on main and refresh the generated registry."
+          } > "$body"
+          existing_pr_number="$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing_pr_number" ]; then
+            gh pr edit "$existing_pr_number" \
+              --title "chore(plugin-registry): delist $PLUGIN_NAME after rejected verification" \
+              --body-file "$body"
+            pr_url="$(gh pr view "$existing_pr_number" --json url --jq .url)"
+          else
+            pr_url="$(gh pr create \
+              --head "$BRANCH_NAME" \
+              --base main \
+              --title "chore(plugin-registry): delist $PLUGIN_NAME after rejected verification" \
+              --body-file "$body")"
+          fi
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Close rejected verification issue
+        if: steps.pr.outputs.pr_url != ''
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_BOT_TOKEN || github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ACTOR: ${{ github.actor }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+        run: |
+          set -euo pipefail
+          gh issue comment "$ISSUE_NUMBER" --body "Verification rejected by @$ACTOR. A delist PR has been created to remove the plugin from the Registry: $PR_URL"
+          gh issue close "$ISSUE_NUMBER" --reason not_planned

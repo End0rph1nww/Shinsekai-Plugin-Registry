@@ -195,8 +195,37 @@ def merge_package_results(
             for field in SOURCE_METADATA_FIELDS:
                 if not merged.get(field) and base[str(entry["name"])].get(field):
                     merged[field] = base[str(entry["name"])][field]
+        merged = reconcile_trust_level(merged)
         generated[str(merged["name"])] = merged
     return generated
+
+
+def reconcile_trust_level(entry: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(entry)
+    trust_level = str(merged.get("trust_level") or ("verified" if merged.get("verified") is True else "community"))
+    merged["trust_level"] = trust_level
+    merged["verified"] = bool(merged.get("verified") is True and trust_level == "verified")
+
+    if trust_level != "verified":
+        return merged
+
+    review = merged.get("review") if isinstance(merged.get("review"), dict) else {}
+    current_commit = str(merged.get("commit_sha") or "")
+    current_version = str(merged.get("version") or "")
+    reviewed_commit = str(review.get("reviewed_commit") or "")
+    reviewed_version = str(review.get("reviewed_version") or "")
+    commit_changed = bool(current_commit and reviewed_commit and current_commit != reviewed_commit)
+    version_changed = bool(current_version and reviewed_version and current_version != reviewed_version)
+    if not commit_changed and not version_changed:
+        return merged
+
+    next_review = dict(review)
+    next_review["status"] = "verified_update_pending"
+    next_review["pending_reason"] = "packaged commit or version differs from the reviewed artifact"
+    merged["trust_level"] = "verified_update_pending"
+    merged["verified"] = False
+    merged["review"] = next_review
+    return merged
 
 
 def update_generated_registry(

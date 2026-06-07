@@ -41,7 +41,7 @@ def test_detect_changed_plugin_names_accepts_object_key_names() -> None:
 
 
 def test_merge_package_results_writes_object_cache() -> None:
-    registry = [plugin("demo_plugin", description="Demo")]
+    registry = [plugin("demo_plugin", description="Demo", trust_level="community", verified=False)]
     package = {
         "name": "demo_plugin",
         "version": "v1.0.0",
@@ -71,6 +71,8 @@ def test_merge_package_results_writes_object_cache() -> None:
     assert generated["demo_plugin"]["name"] == "demo_plugin"
     assert generated["demo_plugin"]["description"] == "Demo"
     assert generated["demo_plugin"]["download_url"] == "https://cdn.example.com/plugins/demo.zip"
+    assert generated["demo_plugin"]["trust_level"] == "community"
+    assert generated["demo_plugin"]["verified"] is False
     assert generated["demo_plugin"]["package"]["source"] == "r2"
     assert generated["demo_plugin"]["logo"] == "https://cdn.example.com/assets/owner/demo/1.0.0/logo-abcdef123456.png"
     assert "logo_asset" not in generated["demo_plugin"]
@@ -195,6 +197,36 @@ def test_merge_package_results_preserves_existing_package_metadata() -> None:
     assert generated["old_plugin"]["download_url"] == "https://cdn.example.com/plugins/old.zip"
     assert generated["old_plugin"]["package"]["r2_key"] == "plugins/owner/old/1.0.0/old.zip"
     assert generated["new_plugin"]["download_url"] == "https://cdn.example.com/plugins/new.zip"
+
+
+def test_merge_package_results_downgrades_verified_when_packaged_commit_changes() -> None:
+    registry = [
+        plugin(
+            "demo_plugin",
+            trust_level="verified",
+            verified=True,
+            review={
+                "status": "maintainer_verified",
+                "reviewed_by": "RachelForster",
+                "reviewed_at": "2026-06-06",
+                "reviewed_commit": "oldcommit",
+                "reviewed_version": "v1.0.0",
+            },
+        )
+    ]
+    package = {
+        "name": "demo_plugin",
+        "version": "v1.0.1",
+        "commit_sha": "newcommit",
+        "download_url": "https://cdn.example.com/plugins/demo.zip",
+        "package": {"source": "r2", "url": "https://cdn.example.com/plugins/demo.zip"},
+    }
+
+    generated = merge_package_results(registry, [package])
+
+    assert generated["demo_plugin"]["trust_level"] == "verified_update_pending"
+    assert generated["demo_plugin"]["verified"] is False
+    assert generated["demo_plugin"]["review"]["status"] == "verified_update_pending"
 
 
 def test_update_generated_registry_writes_cache_and_md5(tmp_path: Path) -> None:
