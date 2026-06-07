@@ -4,48 +4,126 @@
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-moondream-vision",
     "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
-    "entry": "moondream_vision.plugin:MoondreamVisionPlugin"
+    "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T15:06:42Z"
   },
   "whisper_asr": {
     "name": "whisper_asr",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-whisper-asr",
     "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
-    "entry": "whisper_asr.plugin:WhisperAsrPlugin"
+    "entry": "whisper_asr.plugin:WhisperAsrPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-01T13:21:42Z"
   },
   "chat_ui_customize": {
     "name": "chat_ui_customize",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-chatui-customize",
     "description": "Setting the theme of chat ui",
-    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin"
+    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:58:43Z"
   },
   "playwright_browser": {
     "name": "playwright_browser",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-playwright-browser",
     "description": "Enable your agents to operate Chrome",
-    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin"
+    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:59:41Z"
   },
   "cloud_tts": {
     "name": "cloud_tts",
     "author": "End0rph1nww",
     "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
     "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
-    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin"
+    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 1,
+    "forks_count": 1,
+    "repo_updated_at": "2026-06-06T22:29:39Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
     "author": "umikok7",
     "repo": "umikok7/shinsekai-funasr-wss",
     "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
-    "entry": "funasr_wss.plugin:FunASRWssPlugin"
+    "entry": "funasr_wss.plugin:FunASRWssPlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-17T08:23:59Z"
   },
   "bilibili_live": {
     "name": "bilibili_live",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-bilibili-live",
     "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
-    "entry": "bilibili_live.plugin:BilibiliLivePlugin"
+    "entry": "bilibili_live.plugin:BilibiliLivePlugin",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-30T02:28:59Z"
+  },
+  "shinsekai_plugin_ci_smoke": {
+    "name": "shinsekai_plugin_ci_smoke",
+    "display_name": "Shinsekai CI Smoke",
+    "author": "Shinsekai Contributors",
+    "repo": "End0rph1nww/shinsekai-plugin-ci-smoke",
+    "description": "Small test plugin for Registry Issue, R2 package, logo and update detection flows.",
+    "desc": "Small test plugin for Registry Issue, R2 package, logo and update detection flows.",
+    "entry": "plugins.shinsekai_plugin_ci_smoke.plugin:ShinsekaiCiSmokePlugin",
+    "tags": [
+      "ci",
+      "smoke",
+      "test"
+    ],
+    "social_link": "https://github.com/End0rph1nww",
+    "lowest_shinsekai_version": ">=0.2.0",
+    "version": "0.1.0",
+    "commit_sha": "d9f12f6c8df517370facc4c881aae33ad7745d83",
+    "updated_at": "2026-06-07T12:51:40Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip",
+    "sha256": "234cdb6753051c3cd1165b35f1f3bfd072ad758caa13c4588cbb6ef85aba7d58",
+    "size": 5048,
+    "package": {
+      "source": "r2",
+      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip",
+      "sha256": "234cdb6753051c3cd1165b35f1f3bfd072ad758caa13c4588cbb6ef85aba7d58",
+      "size": 5048,
+      "r2_key": "plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/logo-d9f12f6c8df5.png",
+    "plugin_id": "com.shinsekai.ci_smoke",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-07T10:28:10Z"
   }
 }
