@@ -196,6 +196,42 @@ def test_package_local_plugin_prefers_plugin_py_version_when_registry_version_mi
     assert result["package"]["r2_key"] == "plugins/owner/demo_plugin/0.2.1/demo_plugin-0.2.1-abcdef123456.zip"
 
 
+def test_package_local_plugin_reads_plugin_metadata_class_attributes(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "plugin.py").write_text(
+        "\n".join(
+            [
+                "class DemoPlugin:",
+                "    plugin_name = 'Class Attribute Display'",
+                "    plugin_version = '0.3.0'",
+                "    plugin_id = 'com.shinsekai.class_attr'",
+                "    plugin_author = 'Shinsekai Contributors'",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "demo_plugin",
+            "repo": "owner/demo-plugin",
+            "entry": "demo_plugin.plugin:DemoPlugin",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+        fallback_version="v9.9.9",
+    )
+
+    assert result["version"] == "0.3.0"
+    assert result["display_name"] == "Class Attribute Display"
+    assert result["plugin_id"] == "com.shinsekai.class_attr"
+    assert result["author"] == "Shinsekai Contributors"
+
+
 def test_package_local_plugin_prefers_source_version_over_registry_ref(tmp_path: Path) -> None:
     source = tmp_path / "source"
     source.mkdir()

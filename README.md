@@ -48,7 +48,7 @@ plugins/<owner>/<plugin>/<version>/<zip>
 assets/<owner>/<plugin>/<version>/logo-<commit>.png
 ```
 
-Clients and the plugin market should prefer the R2 `registry/plugin_cache_original.json` URL for fresh reads. The GitHub Raw copy remains useful as a fallback and review artifact, but it can lag behind `main` because of Raw CDN caching.
+Clients and the plugin market should use the R2 `registry/plugin_cache_original.json` URL as the production registry source. The generated JSON committed back to GitHub is kept for review and rollback visibility, not as the production distribution URL.
 
 The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.
 

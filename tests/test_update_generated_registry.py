@@ -107,6 +107,20 @@ def test_merge_package_results_hydrates_display_name_from_package_result() -> No
     assert generated["demo_plugin"]["plugin_id"] == "com.shinsekai.demo"
 
 
+def test_merge_package_results_preserves_lowest_shinsekai_version() -> None:
+    registry = [plugin("demo_plugin", lowest_shinsekai_version=">=0.2.0")]
+    package = {
+        "name": "demo_plugin",
+        "version": "0.1.0",
+        "download_url": "https://cdn.example.com/plugins/demo.zip",
+        "package": {"source": "r2"},
+    }
+
+    generated = merge_package_results(registry, [package])
+
+    assert generated["demo_plugin"]["lowest_shinsekai_version"] == ">=0.2.0"
+
+
 def test_merge_package_results_keeps_source_display_name_over_package_result() -> None:
     registry = [plugin("demo_plugin", display_name="Source Display")]
     package = {

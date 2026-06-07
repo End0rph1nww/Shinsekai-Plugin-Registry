@@ -297,6 +297,33 @@ def function_return_string(
     return None
 
 
+def class_string_assignments(
+    node: ast.ClassDef,
+    *,
+    local_constants: dict[str, str],
+    alias_constants: dict[str, dict[str, str]],
+) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for child in node.body:
+        value_node: ast.AST | None = None
+        targets: list[ast.AST] = []
+        if isinstance(child, ast.Assign):
+            value_node = child.value
+            targets = list(child.targets)
+        elif isinstance(child, ast.AnnAssign):
+            value_node = child.value
+            targets = [child.target]
+        if value_node is None:
+            continue
+        value = resolve_string_expr(value_node, local_constants=local_constants, alias_constants=alias_constants)
+        if not value:
+            continue
+        for target in targets:
+            if isinstance(target, ast.Name):
+                values[target.id] = value
+    return values
+
+
 def entry_class_name(entry: str) -> str:
     if ":" not in entry:
         return ""
@@ -357,6 +384,14 @@ def infer_source_metadata(source_dir: Path, entry_path: Path, entry: dict[str, A
 
     cls = metadata_class(tree, str(entry.get("entry") or ""))
     if cls is not None:
+        for name, value in class_string_assignments(
+            cls,
+            local_constants=local_constants,
+            alias_constants=alias_constants,
+        ).items():
+            output_field = PLUGIN_METADATA_PROPERTIES.get(name)
+            if output_field and value:
+                metadata[output_field] = value
         for child in cls.body:
             if not is_property_method(child):
                 continue
