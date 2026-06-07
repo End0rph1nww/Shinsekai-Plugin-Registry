@@ -306,4 +306,4 @@ jobs:
         run: |
           set -euo pipefail
           gh issue comment "$ISSUE_NUMBER" --body "Verification rejected by @$ACTOR. A delist PR has been created to remove the plugin from the Registry: $PR_URL"
-          gh issue close "$ISSUE_NUMBER" --reason "not planned"
+          gh issue close "$ISSUE_NUMBER" --reason not_planned
