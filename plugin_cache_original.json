@@ -4,48 +4,263 @@
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-moondream-vision",
     "description": "Enable your character to see your screen, monitor your new window, and trigger reply automatically",
-    "entry": "moondream_vision.plugin:MoondreamVisionPlugin"
+    "entry": "moondream_vision.plugin:MoondreamVisionPlugin",
+    "version": "0.1.0",
+    "commit_sha": "5ec359b8fabbdc72aeb3e858acb5e75d1d28fc27",
+    "updated_at": "2026-06-07T06:43:41Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip",
+    "sha256": "f9739df15ec9358467f6ff92dff8bdae10c30baba9ccb0b369527b96763f9ffc",
+    "size": 27684,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip",
+      "sha256": "f9739df15ec9358467f6ff92dff8bdae10c30baba9ccb0b369527b96763f9ffc",
+      "size": 27684,
+      "r2_key": "plugins/RachelForster/moondream_vision/0.1.0/moondream_vision-0.1.0-5ec359b8fabb.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "Moondream 识屏",
+    "plugin_id": "com.shinsekai.moondream_vision",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T15:06:42Z"
   },
   "whisper_asr": {
     "name": "whisper_asr",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-whisper-asr",
     "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
-    "entry": "whisper_asr.plugin:WhisperAsrPlugin"
+    "entry": "whisper_asr.plugin:WhisperAsrPlugin",
+    "version": "0.1.0",
+    "commit_sha": "f002bb692cb5a1726114e90a65c9a42492bff05c",
+    "updated_at": "2026-06-07T06:43:44Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-f002bb692cb5.zip",
+    "sha256": "86888ed2c973829496e294c5495ec9f6de35cb1ceacb1b7c9ed274020fb50dcd",
+    "size": 8518,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-f002bb692cb5.zip",
+      "sha256": "86888ed2c973829496e294c5495ec9f6de35cb1ceacb1b7c9ed274020fb50dcd",
+      "size": 8518,
+      "r2_key": "plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-f002bb692cb5.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "plugin_id": "com.shinsekai.whisper_asr",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-01T13:21:42Z"
   },
   "chat_ui_customize": {
     "name": "chat_ui_customize",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-chatui-customize",
     "description": "Setting the theme of chat ui",
-    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin"
+    "entry": "chat_ui_customize.plugin:ChatUiThemePlugin",
+    "version": "0.2.0",
+    "commit_sha": "831fe6820cfec6904e9af10f77c2bbc242036d7e",
+    "updated_at": "2026-06-07T06:43:38Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/chat_ui_customize/0.2.0/chat_ui_customize-0.2.0-831fe6820cfe.zip",
+    "sha256": "0335523a3f28895cf7e11281d462016a2d740d76398f31dafbab788cd5bfbb1a",
+    "size": 12733,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/chat_ui_customize/0.2.0/chat_ui_customize-0.2.0-831fe6820cfe.zip",
+      "sha256": "0335523a3f28895cf7e11281d462016a2d740d76398f31dafbab788cd5bfbb1a",
+      "size": 12733,
+      "r2_key": "plugins/RachelForster/chat_ui_customize/0.2.0/chat_ui_customize-0.2.0-831fe6820cfe.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "Chat UI theme",
+    "plugin_id": "com.shinsekai.chat_ui_customize",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:58:43Z"
   },
   "playwright_browser": {
     "name": "playwright_browser",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-playwright-browser",
     "description": "Enable your agents to operate Chrome",
-    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin"
+    "entry": "playwright_browser.plugin:PlaywrightBrowserPlugin",
+    "version": "0.1.0",
+    "commit_sha": "176fac7370a9141c3e809dcd508744e535ad126d",
+    "updated_at": "2026-06-07T06:43:43Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip",
+    "sha256": "364b6929599b97fce4f8dd61562de9f9a9efd355d24a40357e45c04e29f0f709",
+    "size": 9426,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip",
+      "sha256": "364b6929599b97fce4f8dd61562de9f9a9efd355d24a40357e45c04e29f0f709",
+      "size": 9426,
+      "r2_key": "plugins/RachelForster/playwright_browser/0.1.0/playwright_browser-0.1.0-176fac7370a9.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "Playwright Browser",
+    "plugin_id": "com.shinsekai.playwright_browser",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-01T14:59:41Z"
   },
   "cloud_tts": {
     "name": "cloud_tts",
     "author": "End0rph1nww",
     "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
     "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
-    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin"
+    "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
+    "tags": [
+      "云端语音"
+    ],
+    "trust_level": "verified_update_pending",
+    "verified": false,
+    "review": {
+      "status": "verified_update_pending",
+      "reviewed_by": "End0rph1nww",
+      "reviewed_at": "2026-06-06",
+      "reviewed_commit": "8f3d262ac3888182fb5654f58df4e87b9070c1c7",
+      "reviewed_version": "v0.0.0",
+      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #5 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/5",
+      "pending_reason": "packaged commit or version differs from the reviewed artifact"
+    },
+    "version": "0.11.1",
+    "commit_sha": "53402a8958277b4f59568c649004999015c61b6b",
+    "updated_at": "2026-06-07T06:43:39Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
+    "sha256": "0a97f6a06e53c3ef325329192ef4254763d7eebe957d6ade0bb38d75e8d308fd",
+    "size": 108534,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
+      "sha256": "0a97f6a06e53c3ef325329192ef4254763d7eebe957d6ade0bb38d75e8d308fd",
+      "size": 108534,
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.11.1/logo-53402a895827.webp",
+    "display_name": "Cloud TTS",
+    "plugin_id": "com.shinsekai.cloud_tts",
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 1,
+    "forks_count": 1,
+    "repo_updated_at": "2026-06-06T22:29:39Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
     "author": "umikok7",
     "repo": "umikok7/shinsekai-funasr-wss",
     "description": "FunASR WebSocket ASR plugin for Shinsekai with self-hosted real-time STT support.",
-    "entry": "funasr_wss.plugin:FunASRWssPlugin"
+    "entry": "funasr_wss.plugin:FunASRWssPlugin",
+    "version": "0.1.0",
+    "commit_sha": "5a538055fed4bd121bfc6a00fba2a3f1146ac34a",
+    "updated_at": "2026-06-07T06:43:40Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/umikok7/funasr_wss/0.1.0/funasr_wss-0.1.0-5a538055fed4.zip",
+    "sha256": "2e5a43b5afeaa0b9e6c7f5eb886e67c0802baa206a7939362fe3a583665ae981",
+    "size": 8472,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/umikok7/funasr_wss/0.1.0/funasr_wss-0.1.0-5a538055fed4.zip",
+      "sha256": "2e5a43b5afeaa0b9e6c7f5eb886e67c0802baa206a7939362fe3a583665ae981",
+      "size": 8472,
+      "r2_key": "plugins/umikok7/funasr_wss/0.1.0/funasr_wss-0.1.0-5a538055fed4.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "FunASR WSS",
+    "plugin_id": "dev.shinsekai.funasr_wss",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-17T08:23:59Z"
   },
   "bilibili_live": {
     "name": "bilibili_live",
     "author": "Chihiro",
     "repo": "RachelForster/shinsekai-bilibili-live",
     "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
-    "entry": "bilibili_live.plugin:BilibiliLivePlugin"
+    "entry": "bilibili_live.plugin:BilibiliLivePlugin",
+    "version": "0.1.0",
+    "commit_sha": "4525522a4bc5b75f1de1f18314a068a6fdcd276c",
+    "updated_at": "2026-06-07T06:43:37Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip",
+    "sha256": "da7c8eff032c6962e23d2cf340f91a2adcf91e3f339501985d2aa4f1dbf5816d",
+    "size": 6114,
+    "package": {
+      "source": "r2",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip",
+      "sha256": "da7c8eff032c6962e23d2cf340f91a2adcf91e3f339501985d2aa4f1dbf5816d",
+      "size": 6114,
+      "r2_key": "plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "display_name": "Bilibili 弹幕",
+    "plugin_id": "com.shinsekai.bilibili_live",
+    "trust_level": "community",
+    "verified": false,
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-05-30T02:28:59Z"
   }
 }
