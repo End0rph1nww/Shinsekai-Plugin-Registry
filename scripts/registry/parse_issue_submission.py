@@ -3,11 +3,11 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import re
 import shutil
 import subprocess
-import tempfile
-import re
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -17,8 +17,7 @@ JSON_BLOCK_RE = re.compile(r"```json\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 REQUIRED_FIELDS = ("display_name", "desc", "author", "repo")
-OPTIONAL_COPY_FIELDS = ("version", "shinsekai_version")
-DEFAULT_REVIEW = {"status": "ci_passed"}
+OPTIONAL_COPY_FIELDS = ("shinsekai_version",)
 
 
 class SubmissionError(ValueError):
@@ -95,21 +94,6 @@ def normalize_tags(value: Any) -> list[str]:
     return tags
 
 
-def read_repo_metadata(source_dir: Path) -> dict[str, Any]:
-    for name in ("plugin.json", "shinsekai.plugin.json"):
-        path = source_dir / name
-        if not path.is_file():
-            continue
-        try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            raise SubmissionError(f"{name} is not valid JSON: {exc.msg}.") from exc
-        if not isinstance(payload, dict):
-            raise SubmissionError(f"{name} must contain a JSON object.")
-        return payload
-    return {}
-
-
 def first_plugin_class(plugin_file: Path) -> str:
     try:
         tree = ast.parse(plugin_file.read_text(encoding="utf-8", errors="ignore"))
@@ -182,14 +166,8 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
 
     source_dir = clone_repo_to_temp(repo_slug)
     try:
-        repo_metadata = read_repo_metadata(source_dir)
         entry_value = infer_entry_from_source(source_dir, repo_name)
         name = infer_name_from_entry(entry_value, repo_name)
-        logo_value = payload.get("logo")
-        if not isinstance(logo_value, str) or not logo_value.strip():
-            metadata_logo = repo_metadata.get("logo")
-            if isinstance(metadata_logo, str) and metadata_logo.strip():
-                logo_value = metadata_logo.strip()
     finally:
         shutil.rmtree(source_dir, ignore_errors=True)
 
@@ -201,10 +179,7 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
         "repo": repo_slug,
         "description": desc,
         "desc": desc,
-        "entry": str(entry_value).strip(),
-        "trust_level": "community",
-        "verified": False,
-        "review": dict(DEFAULT_REVIEW),
+        "entry": entry_value,
     }
 
     tags = normalize_tags(payload.get("tags"))
@@ -220,8 +195,6 @@ def build_registry_entry(payload: dict[str, Any]) -> dict[str, Any]:
     for field in OPTIONAL_COPY_FIELDS:
         if field in payload and payload[field] not in (None, ""):
             entry[field] = payload[field]
-    if isinstance(logo_value, str) and logo_value.strip():
-        entry["logo"] = logo_value.strip()
 
     return entry
 
@@ -230,7 +203,7 @@ def load_registry(path: Path) -> Any:
     if not path.exists():
         return []
     try:
-        return json.loads(path.read_text(encoding="utf-8-sig"))
+        return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise SubmissionError(f"{path} is not valid JSON: {exc.msg}.") from exc
 

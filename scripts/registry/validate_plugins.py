@@ -11,7 +11,6 @@ from urllib.parse import urlparse
 
 PLUGIN_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 SLUG_PART_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
-TRUST_LEVELS = {"community", "verified", "verified_update_pending", "blocked"}
 
 
 class RegistryValidationError(ValueError):
@@ -20,7 +19,7 @@ class RegistryValidationError(ValueError):
 
 def load_registry(path: Path) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8-sig"))
+        return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise RegistryValidationError(f"{path} is not valid JSON: {exc.msg}.") from exc
 
@@ -31,9 +30,9 @@ def iter_entries(registry: Any) -> list[dict[str, Any]]:
     elif isinstance(registry, dict):
         plugins = registry.get("plugins")
         if isinstance(plugins, dict):
-            entries = registry_object_values(plugins)
+            entries = list(plugins.values())
         else:
-            entries = registry_object_values(registry)
+            entries = list(registry.values())
     else:
         raise RegistryValidationError("plugins.json must be a JSON array or object.")
 
@@ -43,17 +42,6 @@ def iter_entries(registry: Any) -> list[dict[str, Any]]:
             raise RegistryValidationError(f"entry #{index + 1} must be an object.")
         normalized.append(entry)
     return normalized
-
-
-def registry_object_values(registry: dict[str, Any]) -> list[dict[str, Any]]:
-    entries: list[dict[str, Any]] = []
-    for name, value in registry.items():
-        if not isinstance(value, dict):
-            raise RegistryValidationError("each plugin entry must be an object.")
-        entry = dict(value)
-        entry.setdefault("name", name)
-        entries.append(entry)
-    return entries
 
 
 def validate_repo(value: Any, name: str) -> None:
@@ -112,45 +100,22 @@ def validate_entry(entry: dict[str, Any]) -> None:
     if display_name is not None and (not isinstance(display_name, str) or not display_name.strip()):
         raise RegistryValidationError(f"{name}: display_name must be a non-empty string when provided.")
 
+    shinsekai_version = entry.get("shinsekai_version")
+    if shinsekai_version is not None and (
+        not isinstance(shinsekai_version, str) or not shinsekai_version.strip()
+    ):
+        raise RegistryValidationError(f"{name}: shinsekai_version must be a non-empty string when provided.")
+
     tags = entry.get("tags", [])
     if tags is None:
-        tags = []
-    if tags is not None:
-        if not isinstance(tags, list):
-            raise RegistryValidationError(f"{name}: tags must be an array of strings.")
-        if len(tags) > 5:
-            raise RegistryValidationError(f"{name}: tags must contain at most 5 items.")
-        for tag in tags:
-            if not isinstance(tag, str) or not tag.strip():
-                raise RegistryValidationError(f"{name}: tags must contain non-empty strings only.")
-
-    trust_level = entry.get("trust_level", "verified" if entry.get("verified") is True else "community")
-    if not isinstance(trust_level, str) or trust_level not in TRUST_LEVELS:
-        raise RegistryValidationError(
-            f"{name}: trust_level must be one of {', '.join(sorted(TRUST_LEVELS))}."
-        )
-
-    verified = entry.get("verified", False)
-    if not isinstance(verified, bool):
-        raise RegistryValidationError(f"{name}: verified must be a boolean when provided.")
-
-    review = entry.get("review", {})
-    if review is None:
-        review = {}
-    if not isinstance(review, dict):
-        raise RegistryValidationError(f"{name}: review must be an object when provided.")
-
-    if trust_level == "verified":
-        if verified is not True:
-            raise RegistryValidationError(f"{name}: verified plugins must set verified=true.")
-        required_review_fields = ("status", "reviewed_by", "reviewed_at", "reviewed_commit", "reviewed_version")
-        missing = [field for field in required_review_fields if not isinstance(review.get(field), str) or not review[field].strip()]
-        if missing:
-            raise RegistryValidationError(f"{name}: verified review is missing {', '.join(missing)}.")
-        if review.get("status") != "maintainer_verified":
-            raise RegistryValidationError(f"{name}: verified review.status must be maintainer_verified.")
-    elif verified is True:
-        raise RegistryValidationError(f"{name}: verified=true is only allowed when trust_level is verified.")
+        return
+    if not isinstance(tags, list):
+        raise RegistryValidationError(f"{name}: tags must be an array of strings.")
+    if len(tags) > 5:
+        raise RegistryValidationError(f"{name}: tags must contain at most 5 items.")
+    for tag in tags:
+        if not isinstance(tag, str) or not tag.strip():
+            raise RegistryValidationError(f"{name}: tags must contain non-empty strings only.")
 
 
 def validate_registry(registry: Any) -> None:
