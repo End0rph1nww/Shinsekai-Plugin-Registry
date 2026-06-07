@@ -252,18 +252,18 @@
     ],
     "social_link": "https://github.com/End0rph1nww",
     "lowest_shinsekai_version": ">=0.2.0",
-    "version": "0.1.0",
-    "commit_sha": "d9f12f6c8df517370facc4c881aae33ad7745d83",
-    "updated_at": "2026-06-07T12:51:40Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip",
-    "sha256": "234cdb6753051c3cd1165b35f1f3bfd072ad758caa13c4588cbb6ef85aba7d58",
+    "version": "0.1.1",
+    "commit_sha": "8012e42856c9beb785f98ae374e05f61a6e735ba",
+    "updated_at": "2026-06-07T14:05:31Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip",
+    "sha256": "c35dc4dbcb3e160fc441d193482d8d42d3b02ca0e4b35e02089dca6fd086b5e1",
     "size": 5048,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip",
-      "sha256": "234cdb6753051c3cd1165b35f1f3bfd072ad758caa13c4588cbb6ef85aba7d58",
+      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip",
+      "sha256": "c35dc4dbcb3e160fc441d193482d8d42d3b02ca0e4b35e02089dca6fd086b5e1",
       "size": 5048,
-      "r2_key": "plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/shinsekai_plugin_ci_smoke-0.1.0-d9f12f6c8df5.zip"
+      "r2_key": "plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip"
     },
     "sec_scan": {
       "static": {
@@ -272,7 +272,7 @@
         "findings": []
       }
     },
-    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.0/logo-d9f12f6c8df5.png",
+    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/logo-8012e42856c9.png",
     "plugin_id": "com.shinsekai.ci_smoke",
     "stars": 0,
     "stargazers_count": 0,
