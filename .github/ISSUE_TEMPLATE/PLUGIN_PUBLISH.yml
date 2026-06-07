@@ -19,7 +19,7 @@ body:
           "desc": "Short description, 200 characters or fewer",
           "author": "author",
           "repo": "https://github.com/owner/repo",
-          "shinsekai_version": ">=0.2.0",
+          "shinsekai_version": "Supported Shinsekai version, for example >=0.2.0; optional",
           "tags": [],
           "social_link": ""
         }

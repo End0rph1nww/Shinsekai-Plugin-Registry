@@ -76,11 +76,46 @@ def test_desc_length_is_checked_when_desc_field_is_present() -> None:
         validate_registry([valid_entry(desc="x" * 201)])
 
 
-def test_shinsekai_version_is_optional_string() -> None:
+def test_optional_shinsekai_version_is_valid() -> None:
     validate_registry([valid_entry(shinsekai_version=">=0.2.0")])
 
+
+@pytest.mark.parametrize("value", ["", "   ", 123])
+def test_invalid_optional_shinsekai_version_fails(value: object) -> None:
     with pytest.raises(RegistryValidationError, match="shinsekai_version"):
-        validate_registry([valid_entry(shinsekai_version=123)])
+        validate_registry([valid_entry(shinsekai_version=value)])
+
+
+def test_community_trust_level_is_valid() -> None:
+    validate_registry([valid_entry(trust_level="community", verified=False, review={"status": "ci_passed"})])
+
+
+def test_verified_entry_requires_review_metadata() -> None:
+    with pytest.raises(RegistryValidationError, match="missing reviewed_by"):
+        validate_registry([valid_entry(trust_level="verified", verified=True, review={"status": "maintainer_verified"})])
+
+
+def test_verified_entry_is_valid_with_review_metadata() -> None:
+    validate_registry(
+        [
+            valid_entry(
+                trust_level="verified",
+                verified=True,
+                review={
+                    "status": "maintainer_verified",
+                    "reviewed_by": "RachelForster",
+                    "reviewed_at": "2026-06-06",
+                    "reviewed_commit": "abcdef123456",
+                    "reviewed_version": "v1.0.0",
+                },
+            )
+        ]
+    )
+
+
+def test_verified_true_requires_verified_trust_level() -> None:
+    with pytest.raises(RegistryValidationError, match="verified=true"):
+        validate_registry([valid_entry(trust_level="community", verified=True)])
 
 
 def test_cli_validates_current_registry_file() -> None:
