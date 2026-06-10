@@ -266,28 +266,29 @@
     ],
     "social_link": "https://github.com/End0rph1nww",
     "lowest_shinsekai_version": ">=0.2.0",
-    "trust_level": "verified",
-    "verified": true,
+    "trust_level": "verified_update_pending",
+    "verified": false,
     "review": {
-      "status": "maintainer_verified",
+      "status": "verified_update_pending",
       "reviewed_by": "RachelForster",
       "reviewed_at": "2026-06-07",
       "reviewed_commit": "8012e42856c9beb785f98ae374e05f61a6e735ba",
       "reviewed_version": "0.1.1",
-      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #15 | https://github.com/RachelForster/Shinsekai-Plugin-Registry/issues/15"
+      "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #15 | https://github.com/RachelForster/Shinsekai-Plugin-Registry/issues/15",
+      "pending_reason": "packaged commit or version differs from the reviewed artifact"
     },
     "version": "0.1.1",
-    "commit_sha": "8012e42856c9beb785f98ae374e05f61a6e735ba",
-    "updated_at": "2026-06-07T16:08:20Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip",
-    "sha256": "93753b4ceaed9f77b8acebef907ca3cc9e599ccaa0d777647e916cfc4224721f",
-    "size": 5048,
+    "commit_sha": "3b478827f5c834de009b753ce9a34a8c4606da4b",
+    "updated_at": "2026-06-10T14:51:24Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-3b478827f5c8.zip",
+    "sha256": "b74bff1f8a2fd9024815ded44765285aec18674d2620f6dffd2bbc6a981d8ce7",
+    "size": 75614,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip",
-      "sha256": "93753b4ceaed9f77b8acebef907ca3cc9e599ccaa0d777647e916cfc4224721f",
-      "size": 5048,
-      "r2_key": "plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-8012e42856c9.zip"
+      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-3b478827f5c8.zip",
+      "sha256": "b74bff1f8a2fd9024815ded44765285aec18674d2620f6dffd2bbc6a981d8ce7",
+      "size": 75614,
+      "r2_key": "plugins/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/shinsekai_plugin_ci_smoke-0.1.1-3b478827f5c8.zip"
     },
     "sec_scan": {
       "static": {
@@ -296,7 +297,7 @@
         "findings": []
       }
     },
-    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/logo-8012e42856c9.png",
+    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/shinsekai_plugin_ci_smoke/0.1.1/logo-3b478827f5c8.webp",
     "plugin_id": "com.shinsekai.ci_smoke",
     "stars": 0,
     "stargazers_count": 0,
