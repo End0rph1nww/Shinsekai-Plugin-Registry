@@ -221,18 +221,18 @@
     "repo": "RachelForster/shinsekai-bilibili-live",
     "description": "把B站直播间弹幕接入Shinsekai，让人物和弹幕互动",
     "entry": "bilibili_live.plugin:BilibiliLivePlugin",
-    "version": "0.1.0",
-    "commit_sha": "4525522a4bc5b75f1de1f18314a068a6fdcd276c",
-    "updated_at": "2026-06-07T13:50:26Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip",
-    "sha256": "d06757325cb0e538b57c5d48de7a3dd9e7f9836a50cbe3be3c156cb487c5d46d",
-    "size": 6114,
+    "version": "0.2.0",
+    "commit_sha": "5fa86b8690504c1a77107adc01de08574db42ef5",
+    "updated_at": "2026-06-15T16:18:26Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/RachelForster/bilibili_live/0.2.0/bilibili_live-0.2.0-5fa86b869050.zip",
+    "sha256": "519054017a086554d8f6556e878053c96d8d2992fb930c3c68d94e5342eded44",
+    "size": 8837,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip",
-      "sha256": "d06757325cb0e538b57c5d48de7a3dd9e7f9836a50cbe3be3c156cb487c5d46d",
-      "size": 6114,
-      "r2_key": "plugins/RachelForster/bilibili_live/0.1.0/bilibili_live-0.1.0-4525522a4bc5.zip"
+      "url": "https://r2.shinsekai.studio/plugins/RachelForster/bilibili_live/0.2.0/bilibili_live-0.2.0-5fa86b869050.zip",
+      "sha256": "519054017a086554d8f6556e878053c96d8d2992fb930c3c68d94e5342eded44",
+      "size": 8837,
+      "r2_key": "plugins/RachelForster/bilibili_live/0.2.0/bilibili_live-0.2.0-5fa86b869050.zip"
     },
     "sec_scan": {
       "static": {
@@ -249,7 +249,7 @@
     "stargazers_count": 0,
     "forks": 0,
     "forks_count": 0,
-    "repo_updated_at": "2026-05-30T02:28:59Z"
+    "repo_updated_at": "2026-06-15T16:18:24Z"
   },
   "shinsekai_plugin_ci_smoke": {
     "name": "shinsekai_plugin_ci_smoke",
