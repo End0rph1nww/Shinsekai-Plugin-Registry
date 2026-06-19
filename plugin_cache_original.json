@@ -162,18 +162,18 @@
       "notes": "Request maintainer verification for this Shinsekai community plugin. | Verification request issue #5 | https://github.com/End0rph1nww/Shinsekai-Plugin-Registry/issues/5",
       "pending_reason": "packaged commit or version differs from the reviewed artifact"
     },
-    "version": "0.11.1",
-    "commit_sha": "53402a8958277b4f59568c649004999015c61b6b",
-    "updated_at": "2026-06-07T06:43:39Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
-    "sha256": "0a97f6a06e53c3ef325329192ef4254763d7eebe957d6ade0bb38d75e8d308fd",
-    "size": 108534,
+    "version": "0.12.0",
+    "commit_sha": "3bb7a2f36db591593f2c2602c185e5726febe220",
+    "updated_at": "2026-06-19T11:50:48Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
+    "sha256": "eb67b31991934e97feb8cdc5a8f57b05dd28af8faeaeefa9e6d69bc6cd8e9870",
+    "size": 169067,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
-      "sha256": "0a97f6a06e53c3ef325329192ef4254763d7eebe957d6ade0bb38d75e8d308fd",
-      "size": 108534,
-      "r2_key": "plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip"
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
+      "sha256": "eb67b31991934e97feb8cdc5a8f57b05dd28af8faeaeefa9e6d69bc6cd8e9870",
+      "size": 169067,
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip"
     },
     "sec_scan": {
       "static": {
@@ -182,14 +182,14 @@
         "findings": []
       }
     },
-    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.11.1/logo-53402a895827.webp",
+    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.12.0/logo-3bb7a2f36db5.webp",
     "display_name": "Cloud TTS",
     "plugin_id": "com.shinsekai.cloud_tts",
     "stars": 2,
     "stargazers_count": 2,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-06-06T22:29:39Z"
+    "repo_updated_at": "2026-06-19T08:25:51Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
