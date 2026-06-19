@@ -148,18 +148,18 @@
     "repo": "End0rph1nww/Shinsekai-Cloud-TTS",
     "description": "（低配置 PC 福音，生动语音效果）接入 MiniMax、Qwen 等云端语音克隆生成模型，已支持自部署的GPT SoVITS等开源模型接入，支持角色 voice_id 绑定、参考音频复刻、语气提示词约束和云端语音生成",
     "entry": "plugins.cloud_tts.plugin:CloudTtsPlugin",
-    "version": "0.11.1",
-    "commit_sha": "53402a8958277b4f59568c649004999015c61b6b",
-    "updated_at": "2026-06-07T13:50:29Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
-    "sha256": "ddb5e710f81cc6641f063a5bb227a5aa08745907b4d7cf2522b872fb4699d541",
-    "size": 108534,
+    "version": "0.12.0",
+    "commit_sha": "3bb7a2f36db591593f2c2602c185e5726febe220",
+    "updated_at": "2026-06-19T08:28:13Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
+    "sha256": "bb78cbb5bc66702955d6b369edfc45249fad357e0508b72c3d8e0206778ce3e4",
+    "size": 169067,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip",
-      "sha256": "ddb5e710f81cc6641f063a5bb227a5aa08745907b4d7cf2522b872fb4699d541",
-      "size": 108534,
-      "r2_key": "plugins/End0rph1nww/cloud_tts/0.11.1/cloud_tts-0.11.1-53402a895827.zip"
+      "url": "https://r2.shinsekai.studio/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
+      "sha256": "bb78cbb5bc66702955d6b369edfc45249fad357e0508b72c3d8e0206778ce3e4",
+      "size": 169067,
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip"
     },
     "sec_scan": {
       "static": {
@@ -168,7 +168,7 @@
         "findings": []
       }
     },
-    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/cloud_tts/0.11.1/logo-53402a895827.webp",
+    "logo": "https://r2.shinsekai.studio/assets/End0rph1nww/cloud_tts/0.12.0/logo-3bb7a2f36db5.webp",
     "display_name": "Cloud TTS",
     "plugin_id": "com.shinsekai.cloud_tts",
     "trust_level": "community",
@@ -177,7 +177,7 @@
     "stargazers_count": 2,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-06-06T22:29:39Z"
+    "repo_updated_at": "2026-06-19T08:25:51Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
