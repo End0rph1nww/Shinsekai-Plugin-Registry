@@ -319,17 +319,17 @@
     },
     "lowest_shinsekai_version": "2.1.0",
     "version": "0.2.0",
-    "commit_sha": "aba9c59271f66aa3ba75e726c564a2c125fa6084",
-    "updated_at": "2026-06-20T04:18:12Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-aba9c59271f6.zip",
-    "sha256": "17c3ed05900f2c54411e71573f396b78ccd3f915b0be6d7aef915bbad65b9072",
-    "size": 16888,
+    "commit_sha": "86cff989d7f93a584f1319af799fbf14e425367c",
+    "updated_at": "2026-06-20T08:18:17Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-86cff989d7f9.zip",
+    "sha256": "233e81d99d8ae5bf69b41b92f6f99f5d2ffe518b8d3afcb414c7762f9db7b17f",
+    "size": 16727,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-aba9c59271f6.zip",
-      "sha256": "17c3ed05900f2c54411e71573f396b78ccd3f915b0be6d7aef915bbad65b9072",
-      "size": 16888,
-      "r2_key": "plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-aba9c59271f6.zip"
+      "url": "https://r2.shinsekai.studio/plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-86cff989d7f9.zip",
+      "sha256": "233e81d99d8ae5bf69b41b92f6f99f5d2ffe518b8d3afcb414c7762f9db7b17f",
+      "size": 16727,
+      "r2_key": "plugins/ferrumu192024-pixel/memory_system/0.2.0/memory_system-0.2.0-86cff989d7f9.zip"
     },
     "sec_scan": {
       "static": {
@@ -343,6 +343,6 @@
     "stargazers_count": 0,
     "forks": 0,
     "forks_count": 0,
-    "repo_updated_at": "2026-06-20T02:22:23Z"
+    "repo_updated_at": "2026-06-20T06:46:24Z"
   }
 }
