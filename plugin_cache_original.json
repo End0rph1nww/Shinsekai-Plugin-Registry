@@ -163,17 +163,17 @@
       "pending_reason": "packaged commit or version differs from the reviewed artifact"
     },
     "version": "0.12.0",
-    "commit_sha": "3bb7a2f36db591593f2c2602c185e5726febe220",
-    "updated_at": "2026-06-19T11:50:48Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
-    "sha256": "eb67b31991934e97feb8cdc5a8f57b05dd28af8faeaeefa9e6d69bc6cd8e9870",
+    "commit_sha": "9db46ec145e59c64991a54e47d1dffc8d83b8e7d",
+    "updated_at": "2026-06-21T14:07:16Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-9db46ec145e5.zip",
+    "sha256": "439df5c936753360fba82576c3436a631e1e641a1eba85de6fa578083b3b6640",
     "size": 169067,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip",
-      "sha256": "eb67b31991934e97feb8cdc5a8f57b05dd28af8faeaeefa9e6d69bc6cd8e9870",
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-9db46ec145e5.zip",
+      "sha256": "439df5c936753360fba82576c3436a631e1e641a1eba85de6fa578083b3b6640",
       "size": 169067,
-      "r2_key": "plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-3bb7a2f36db5.zip"
+      "r2_key": "plugins/End0rph1nww/cloud_tts/0.12.0/cloud_tts-0.12.0-9db46ec145e5.zip"
     },
     "sec_scan": {
       "static": {
@@ -182,14 +182,14 @@
         "findings": []
       }
     },
-    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.12.0/logo-3bb7a2f36db5.webp",
+    "logo": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/assets/End0rph1nww/cloud_tts/0.12.0/logo-9db46ec145e5.webp",
     "display_name": "Cloud TTS",
     "plugin_id": "com.shinsekai.cloud_tts",
     "stars": 2,
     "stargazers_count": 2,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-06-19T08:25:51Z"
+    "repo_updated_at": "2026-06-21T12:50:21Z"
   },
   "funasr_wss": {
     "name": "funasr_wss",
