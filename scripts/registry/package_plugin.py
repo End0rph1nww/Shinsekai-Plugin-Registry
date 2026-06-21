@@ -34,7 +34,7 @@ LOGO_CONTENT_TYPES = {
     ".jpeg": "image/jpeg",
     ".webp": "image/webp",
 }
-EXCLUDED_DIRS = {
+EXCLUDED_ANY_DEPTH_DIRS = {
     ".git",
     ".github",
     "__pycache__",
@@ -47,14 +47,14 @@ EXCLUDED_DIRS = {
     "cache",
     "caches",
     "node_modules",
-    "dist",
-    "build",
     ".tox",
     "log",
     "logs",
     "tmp",
     "temp",
 }
+EXCLUDED_TOP_LEVEL_DIRS = {"dist", "build"}
+EXCLUDED_DIRS = EXCLUDED_ANY_DEPTH_DIRS | EXCLUDED_TOP_LEVEL_DIRS
 EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".log", ".tmp", ".temp"}
 EXCLUDED_FILES = {".DS_Store"}
 
@@ -107,29 +107,47 @@ def build_r2_logo_key(owner: str, plugin_name: str, version: str, commit_sha: st
     return f"assets/{owner}/{plugin_name}/{clean_version}/logo-{commit12}{clean_suffix}"
 
 
+def should_exclude_parts(rel_parts: tuple[str, ...]) -> bool:
+    if any(part in EXCLUDED_ANY_DEPTH_DIRS for part in rel_parts):
+        return True
+    # Top-level dist/build folders are usually project build artifacts. Nested
+    # dist/build folders may be runtime assets, such as plugin frontend pages.
+    if rel_parts and rel_parts[0] in EXCLUDED_TOP_LEVEL_DIRS:
+        return True
+    name = rel_parts[-1] if rel_parts else ""
+    if name in EXCLUDED_FILES:
+        return True
+    if name == ".env" or name.startswith(".env."):
+        return True
+    if PurePosixPath(name).suffix.lower() in EXCLUDED_SUFFIXES:
+        return True
+    return False
+
+
 def should_exclude(path: Path, root: Path) -> bool:
-    rel_parts = path.relative_to(root).parts
-    if any(part in EXCLUDED_DIRS for part in rel_parts):
-        return True
-    if path.name in EXCLUDED_FILES:
-        return True
-    if path.name == ".env" or path.name.startswith(".env."):
-        return True
-    if path.suffix.lower() in EXCLUDED_SUFFIXES:
-        return True
-    return False
+    return should_exclude_parts(path.relative_to(root).parts)
 
 
-def should_exclude_archive_member(path: PurePosixPath) -> bool:
-    if any(part in EXCLUDED_DIRS for part in path.parts):
-        return True
-    if path.name in EXCLUDED_FILES:
-        return True
-    if path.name == ".env" or path.name.startswith(".env."):
-        return True
-    if path.suffix.lower() in EXCLUDED_SUFFIXES:
-        return True
-    return False
+def archive_root_prefix(members: list[zipfile.ZipInfo]) -> str | None:
+    roots: set[str] = set()
+    for member in members:
+        if member.is_dir() or "\\" in member.filename:
+            continue
+        path = PurePosixPath(member.filename)
+        parts = path.parts
+        if not parts or path.is_absolute() or ".." in parts:
+            continue
+        if len(parts) == 1:
+            return None
+        roots.add(parts[0])
+    return next(iter(roots)) if len(roots) == 1 else None
+
+
+def should_exclude_archive_member(path: PurePosixPath, archive_root: str | None = None) -> bool:
+    parts = path.parts
+    if archive_root and parts and parts[0] == archive_root:
+        parts = parts[1:]
+    return should_exclude_parts(tuple(parts))
 
 
 def candidate_entry_paths(entry: str, plugin_name: str | None = None) -> list[Path]:
@@ -656,6 +674,7 @@ def extract_archive_to_source(
             raise PackageError(f"archive has too many files: {len(members)} > {max_members}")
 
         extracted_bytes = 0
+        archive_root = archive_root_prefix(members)
         dest_dir.mkdir(parents=True, exist_ok=True)
         for member in members:
             if "\\" in member.filename:
@@ -664,7 +683,7 @@ def extract_archive_to_source(
             if member_path.is_absolute() or ".." in member_path.parts:
                 raise PackageError(f"unsafe archive path: {member.filename}")
 
-            if member.is_dir() or should_exclude_archive_member(member_path):
+            if member.is_dir() or should_exclude_archive_member(member_path, archive_root):
                 continue
 
             extracted_bytes += member.file_size

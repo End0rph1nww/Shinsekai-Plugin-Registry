@@ -153,6 +153,33 @@ def test_package_local_plugin_builds_clean_zip_and_metadata(tmp_path: Path) -> N
     assert "build/skip.txt" not in names
 
 
+def test_package_local_plugin_preserves_nested_frontend_dist_assets(tmp_path: Path) -> None:
+    source = make_plugin(tmp_path)
+    (source / "frontend" / "dist").mkdir(parents=True)
+    (source / "frontend" / "dist" / "index.html").write_text("<!doctype html>\n", encoding="utf-8")
+    (source / "dist").mkdir()
+    (source / "dist" / "skip.txt").write_text("top-level build output\n", encoding="utf-8")
+
+    result = package_local_plugin(
+        source_dir=source,
+        entry={
+            "name": "demo_plugin",
+            "repo": "owner/demo-plugin",
+            "entry": "plugins.demo.plugin:DemoPlugin",
+        },
+        output_dir=tmp_path / "out",
+        commit_sha="abcdef1234567890",
+        public_base_url="https://cdn.example.com",
+        max_bytes=16_777_216,
+    )
+
+    with zipfile.ZipFile(result["zip_path"]) as archive:
+        names = set(archive.namelist())
+
+    assert "frontend/dist/index.html" in names
+    assert "dist/skip.txt" not in names
+
+
 def test_package_local_plugin_prefers_plugin_py_version_when_registry_version_missing(tmp_path: Path) -> None:
     source = tmp_path / "source"
     source.mkdir()
@@ -460,6 +487,19 @@ def test_extract_archive_to_source_skips_excluded_members(tmp_path: Path) -> Non
     assert (source / "plugins" / "demo" / "plugin.py").exists()
     assert not (source / "node_modules" / "skip.js").exists()
     assert not (source / ".env.production").exists()
+
+
+def test_extract_archive_to_source_preserves_nested_frontend_dist_assets(tmp_path: Path) -> None:
+    archive_path = tmp_path / "source.zip"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("root/plugins/demo/plugin.py", "pass\n")
+        archive.writestr("root/frontend/dist/index.html", "<!doctype html>\n")
+        archive.writestr("root/dist/skip.txt", "top-level build output\n")
+
+    source = extract_archive_to_source(archive_path, tmp_path / "out")
+
+    assert (source / "frontend" / "dist" / "index.html").exists()
+    assert not (source / "dist" / "skip.txt").exists()
 
 
 def test_download_github_archive_rejects_large_content_length(
