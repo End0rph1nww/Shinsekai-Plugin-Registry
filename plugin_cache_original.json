@@ -247,9 +247,9 @@
     "verified": false,
     "stars": 0,
     "stargazers_count": 0,
-    "forks": 0,
-    "forks_count": 0,
-    "repo_updated_at": "2026-06-22T17:25:05Z"
+    "forks": 1,
+    "forks_count": 1,
+    "repo_updated_at": "2026-06-26T09:46:47Z"
   },
   "shinsekai_plugin_ci_smoke": {
     "name": "shinsekai_plugin_ci_smoke",
@@ -344,5 +344,47 @@
     "forks": 0,
     "forks_count": 0,
     "repo_updated_at": "2026-06-21T13:16:25Z"
+  },
+  "shinsekai_mouse": {
+    "name": "shinsekai_mouse",
+    "display_name": "Shinsekai-mouse control",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-Mouse",
+    "description": "Shinsekai鼠标操控插件，实现char操控鼠标点击、拖动。搭配moondream使用效果更佳。",
+    "desc": "Shinsekai鼠标操控插件，实现char操控鼠标点击、拖动。搭配moondream使用效果更佳。",
+    "entry": "plugins.shinsekai_mouse.plugin:MouseControlPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
+    "lowest_shinsekai_version": "0.2.0",
+    "version": "0.3.0",
+    "commit_sha": "eded873f35d6d8ea2440ae7983c929e801764145",
+    "updated_at": "2026-06-26T10:10:42Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_mouse/0.3.0/shinsekai_mouse-0.3.0-eded873f35d6.zip",
+    "sha256": "bd36e347fffd649b9d305b6751a0c611ca86d7767fa52e51429cde53c2b6acdb",
+    "size": 36777,
+    "package": {
+      "source": "r2",
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_mouse/0.3.0/shinsekai_mouse-0.3.0-eded873f35d6.zip",
+      "sha256": "bd36e347fffd649b9d305b6751a0c611ca86d7767fa52e51429cde53c2b6acdb",
+      "size": 36777,
+      "r2_key": "plugins/Mizushima-Mihane/shinsekai_mouse/0.3.0/shinsekai_mouse-0.3.0-eded873f35d6.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "plugin_id": "com.shinsekai.mouse_control",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-06-24T14:44:50Z"
   }
 }
