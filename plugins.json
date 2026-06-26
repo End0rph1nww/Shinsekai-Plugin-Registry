@@ -88,5 +88,21 @@
       "status": "ci_passed"
     },
     "lowest_shinsekai_version": "2.1.0"
+  },
+  {
+    "name": "shinsekai_mouse",
+    "display_name": "Shinsekai-mouse control",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-Mouse",
+    "description": "Shinsekai鼠标操控插件，实现char操控鼠标点击、拖动。搭配moondream使用效果更佳。",
+    "desc": "Shinsekai鼠标操控插件，实现char操控鼠标点击、拖动。搭配moondream使用效果更佳。",
+    "entry": "plugins.shinsekai_mouse.plugin:MouseControlPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
+    "lowest_shinsekai_version": "0.2.0"
   }
 ]
