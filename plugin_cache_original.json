@@ -361,17 +361,17 @@
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
     "lowest_shinsekai_version": "2.1.0",
     "version": "0.3.1",
-    "commit_sha": "7470c0bffc543b61e388ea405051b1d2da4f16d5",
-    "updated_at": "2026-06-27T10:52:56Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-7470c0bffc54.zip",
-    "sha256": "cbb65590f64f3eaebc68cfe9766bab4a65a4d20eb238c741f131dbbfa41a7150",
-    "size": 47431,
+    "commit_sha": "bf37e4fd129b9ead454b4bddcdf830fe10ded75a",
+    "updated_at": "2026-06-27T12:06:29Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip",
+    "sha256": "26226319cb03e41ab8af9e3341ed8d99ef3270b39604924cd1c2eb5a7845b4bc",
+    "size": 48667,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-7470c0bffc54.zip",
-      "sha256": "cbb65590f64f3eaebc68cfe9766bab4a65a4d20eb238c741f131dbbfa41a7150",
-      "size": 47431,
-      "r2_key": "plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-7470c0bffc54.zip"
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip",
+      "sha256": "26226319cb03e41ab8af9e3341ed8d99ef3270b39604924cd1c2eb5a7845b4bc",
+      "size": 48667,
+      "r2_key": "plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip"
     },
     "sec_scan": {
       "static": {
@@ -385,6 +385,6 @@
     "stargazers_count": 0,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-06-27T10:51:06Z"
+    "repo_updated_at": "2026-06-27T12:05:29Z"
   }
 }
