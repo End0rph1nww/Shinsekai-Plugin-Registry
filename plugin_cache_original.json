@@ -386,5 +386,52 @@
     "forks": 1,
     "forks_count": 1,
     "repo_updated_at": "2026-06-27T12:05:29Z"
+  },
+  "shinsekai_heartbeat": {
+    "name": "shinsekai_heartbeat",
+    "display_name": "Heartbeat Companion",
+    "author": "Hard-to-tell",
+    "repo": "Hard-to-tell/shinsekai-heartbeat",
+    "description": "Let the current Shinsekai character speak after the user has been idle, with optional Moondream screen context.",
+    "desc": "Let the current Shinsekai character speak after the user has been idle, with optional Moondream screen context.",
+    "entry": "plugins.shinsekai_heartbeat.plugin:HeartbeatCompanionPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "tags": [
+      "heartbeat",
+      "companion",
+      "automation",
+      "vision"
+    ],
+    "social_link": "https://github.com/Hard-to-tell",
+    "lowest_shinsekai_version": ">=2.1.0",
+    "version": "0.1.0",
+    "commit_sha": "35fdb9dd14985a0c40a5625f323437e409d3249b",
+    "updated_at": "2026-07-01T01:54:49Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Hard-to-tell/shinsekai_heartbeat/0.1.0/shinsekai_heartbeat-0.1.0-35fdb9dd1498.zip",
+    "sha256": "66cd95b99c1a01a1c98137b02b1cf9bc63c8dfaa53e5405a8aee3cb26e92f151",
+    "size": 15937,
+    "package": {
+      "source": "r2",
+      "url": "https://r2.shinsekai.studio/plugins/Hard-to-tell/shinsekai_heartbeat/0.1.0/shinsekai_heartbeat-0.1.0-35fdb9dd1498.zip",
+      "sha256": "66cd95b99c1a01a1c98137b02b1cf9bc63c8dfaa53e5405a8aee3cb26e92f151",
+      "size": 15937,
+      "r2_key": "plugins/Hard-to-tell/shinsekai_heartbeat/0.1.0/shinsekai_heartbeat-0.1.0-35fdb9dd1498.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "stars": 2,
+    "stargazers_count": 2,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-07-01T01:51:26Z"
   }
 }
