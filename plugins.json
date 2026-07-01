@@ -100,9 +100,31 @@
     "trust_level": "community",
     "verified": false,
     "review": {
-    "status": "ci_passed"
+      "status": "ci_passed"
     },
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
     "lowest_shinsekai_version": "2.1.0"
+  },
+  {
+    "name": "shinsekai_heartbeat",
+    "display_name": "Heartbeat Companion",
+    "author": "Hard-to-tell",
+    "repo": "Hard-to-tell/shinsekai-heartbeat",
+    "description": "Let the current Shinsekai character speak after the user has been idle, with optional Moondream screen context.",
+    "desc": "Let the current Shinsekai character speak after the user has been idle, with optional Moondream screen context.",
+    "entry": "plugins.shinsekai_heartbeat.plugin:HeartbeatCompanionPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "tags": [
+      "heartbeat",
+      "companion",
+      "automation",
+      "vision"
+    ],
+    "social_link": "https://github.com/Hard-to-tell",
+    "lowest_shinsekai_version": ">=2.1.0"
   }
 ]
