@@ -433,5 +433,48 @@
     "forks": 0,
     "forks_count": 0,
     "repo_updated_at": "2026-07-01T17:25:56Z"
+  },
+  "cloud_vision": {
+    "name": "cloud_vision",
+    "display_name": "Shinsekai-cloud-vision",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-cloud-vision",
+    "description": "云端识图插件，支持接入Qwen、gemini、claude等云端识图api，也支持在llm配置页使用多模态的大模型。有三种识屏方式可供选择，主动调用识屏工具，一话一识屏；自动识屏，参考moondream定时识别屏幕；主动识屏，可以自动检测画面变化主动搭话。",
+    "desc": "云端识图插件，支持接入Qwen、gemini、claude等云端识图api，也支持在llm配置页使用多模态的大模型。有三种识屏方式可供选择，主动调用识屏工具，一话一识屏；自动识屏，参考moondream定时识别屏幕；主动识屏，可以自动检测画面变化主动搭话。",
+    "entry": "plugins.cloud_vision.plugin:CloudVisionPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.40164.0.0",
+    "lowest_shinsekai_version": "0.2.0",
+    "version": "1.0.0",
+    "commit_sha": "a7179156cf7a06f6956ab8f10a1f1b7afad86f37",
+    "updated_at": "2026-07-02T11:58:09Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip",
+    "sha256": "d925aae509ef85005a9aae7a1d24836b7395ed38cab9640d70426123af2317b1",
+    "size": 292691,
+    "package": {
+      "source": "r2",
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip",
+      "sha256": "d925aae509ef85005a9aae7a1d24836b7395ed38cab9640d70426123af2317b1",
+      "size": 292691,
+      "r2_key": "plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/cloud_vision/1.0.0/logo-a7179156cf7a.jpg",
+    "plugin_id": "com.shinsekai.cloud_vision",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-07-02T05:35:02Z"
   }
 }
