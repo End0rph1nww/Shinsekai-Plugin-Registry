@@ -126,5 +126,21 @@
     ],
     "social_link": "https://github.com/Hard-to-tell",
     "lowest_shinsekai_version": ">=2.1.0"
+  },
+  {
+    "name": "cloud_vision",
+    "display_name": "Shinsekai-cloud-vision",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-cloud-vision",
+    "description": "云端识图插件，支持接入Qwen、gemini、claude等云端识图api，也支持在llm配置页使用多模态的大模型。有三种识屏方式可供选择，主动调用识屏工具，一话一识屏；自动识屏，参考moondream定时识别屏幕；主动识屏，可以自动检测画面变化主动搭话。",
+    "desc": "云端识图插件，支持接入Qwen、gemini、claude等云端识图api，也支持在llm配置页使用多模态的大模型。有三种识屏方式可供选择，主动调用识屏工具，一话一识屏；自动识屏，参考moondream定时识别屏幕；主动识屏，可以自动检测画面变化主动搭话。",
+    "entry": "plugins.cloud_vision.plugin:CloudVisionPlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.40164.0.0",
+    "lowest_shinsekai_version": "0.2.0"
   }
 ]
