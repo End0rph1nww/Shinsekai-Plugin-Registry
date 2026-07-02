@@ -361,17 +361,17 @@
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
     "lowest_shinsekai_version": "2.1.0",
     "version": "0.3.1",
-    "commit_sha": "bf37e4fd129b9ead454b4bddcdf830fe10ded75a",
-    "updated_at": "2026-06-27T12:06:29Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip",
-    "sha256": "26226319cb03e41ab8af9e3341ed8d99ef3270b39604924cd1c2eb5a7845b4bc",
-    "size": 48667,
+    "commit_sha": "0e5589eba1a67293284c1079565c291f2bc3a8e3",
+    "updated_at": "2026-07-02T15:12:27Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-0e5589eba1a6.zip",
+    "sha256": "e6965f0dc1512fc376201c583c6add3f199c34fd58f95907e94b00712a1ce4ef",
+    "size": 129960,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip",
-      "sha256": "26226319cb03e41ab8af9e3341ed8d99ef3270b39604924cd1c2eb5a7845b4bc",
-      "size": 48667,
-      "r2_key": "plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-bf37e4fd129b.zip"
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-0e5589eba1a6.zip",
+      "sha256": "e6965f0dc1512fc376201c583c6add3f199c34fd58f95907e94b00712a1ce4ef",
+      "size": 129960,
+      "r2_key": "plugins/Mizushima-Mihane/mouse_control/0.3.1/mouse_control-0.3.1-0e5589eba1a6.zip"
     },
     "sec_scan": {
       "static": {
@@ -380,12 +380,13 @@
         "findings": []
       }
     },
+    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/mouse_control/0.3.1/logo-0e5589eba1a6.jpg",
     "plugin_id": "com.shinsekai.mouse_control",
     "stars": 0,
     "stargazers_count": 0,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-06-27T12:05:29Z"
+    "repo_updated_at": "2026-07-02T15:05:22Z"
   },
   "shinsekai_heartbeat": {
     "name": "shinsekai_heartbeat",
@@ -450,17 +451,17 @@
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.40164.0.0",
     "lowest_shinsekai_version": "0.2.0",
     "version": "1.0.0",
-    "commit_sha": "a7179156cf7a06f6956ab8f10a1f1b7afad86f37",
-    "updated_at": "2026-07-02T11:58:09Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip",
-    "sha256": "d925aae509ef85005a9aae7a1d24836b7395ed38cab9640d70426123af2317b1",
-    "size": 292691,
+    "commit_sha": "f96a693e14db10f80b47cc16936167f4c7f80f20",
+    "updated_at": "2026-07-02T15:12:25Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-f96a693e14db.zip",
+    "sha256": "158c87fb8286d66bc30283c9f02a9e508c8ac029c48e9d4f89bb7fc2d05b1da1",
+    "size": 292197,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip",
-      "sha256": "d925aae509ef85005a9aae7a1d24836b7395ed38cab9640d70426123af2317b1",
-      "size": 292691,
-      "r2_key": "plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-a7179156cf7a.zip"
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-f96a693e14db.zip",
+      "sha256": "158c87fb8286d66bc30283c9f02a9e508c8ac029c48e9d4f89bb7fc2d05b1da1",
+      "size": 292197,
+      "r2_key": "plugins/Mizushima-Mihane/cloud_vision/1.0.0/cloud_vision-1.0.0-f96a693e14db.zip"
     },
     "sec_scan": {
       "static": {
@@ -469,12 +470,12 @@
         "findings": []
       }
     },
-    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/cloud_vision/1.0.0/logo-a7179156cf7a.jpg",
+    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/cloud_vision/1.0.0/logo-f96a693e14db.jpg",
     "plugin_id": "com.shinsekai.cloud_vision",
     "stars": 0,
     "stargazers_count": 0,
     "forks": 0,
     "forks_count": 0,
-    "repo_updated_at": "2026-07-02T05:35:02Z"
+    "repo_updated_at": "2026-07-02T15:12:35Z"
   }
 }
