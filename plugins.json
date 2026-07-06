@@ -142,5 +142,20 @@
     },
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.40164.0.0",
     "lowest_shinsekai_version": "0.2.0"
+  },
+  {
+    "name": "shinsekai_chat_phone",
+    "display_name": "chat_phone",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-chat-phone",
+    "description": "给用户提供小手机服务，可以跟不在同一场景的char发短信、打电话、听音乐。还可以让char主动发短信打电话哦！~可在配置页面配置角色头像、手机主题色。",
+    "desc": "给用户提供小手机服务，可以跟不在同一场景的char发短信、打电话、听音乐。还可以让char主动发短信打电话哦！~可在配置页面配置角色头像、手机主题色。",
+    "entry": "plugins.shinsekai_chat_phone.plugin:ChatPhonePlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0"
   }
 ]
