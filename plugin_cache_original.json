@@ -477,5 +477,46 @@
     "forks": 0,
     "forks_count": 0,
     "repo_updated_at": "2026-07-02T15:12:35Z"
+  },
+  "shinsekai_chat_phone": {
+    "name": "shinsekai_chat_phone",
+    "display_name": "chat_phone",
+    "author": "pipi_",
+    "repo": "Mizushima-Mihane/Shinsekai-chat-phone",
+    "description": "给用户提供小手机服务，可以跟不在同一场景的char发短信、打电话、听音乐。还可以让char主动发短信打电话哦！~可在配置页面配置角色头像、手机主题色。",
+    "desc": "给用户提供小手机服务，可以跟不在同一场景的char发短信、打电话、听音乐。还可以让char主动发短信打电话哦！~可在配置页面配置角色头像、手机主题色。",
+    "entry": "plugins.shinsekai_chat_phone.plugin:ChatPhonePlugin",
+    "trust_level": "community",
+    "verified": false,
+    "review": {
+      "status": "ci_passed"
+    },
+    "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
+    "version": "1.0.0",
+    "commit_sha": "17faf7fdc50f94e6f6d8ebd61d8e859730b80157",
+    "updated_at": "2026-07-06T10:52:38Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-17faf7fdc50f.zip",
+    "sha256": "5ba62c4a3e1d2f9e27078f960d726c626f4da483f58627e1c53a3f6089e406ec",
+    "size": 1947063,
+    "package": {
+      "source": "r2",
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-17faf7fdc50f.zip",
+      "sha256": "5ba62c4a3e1d2f9e27078f960d726c626f4da483f58627e1c53a3f6089e406ec",
+      "size": 1947063,
+      "r2_key": "plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-17faf7fdc50f.zip"
+    },
+    "sec_scan": {
+      "static": {
+        "pass": true,
+        "msg": "No blocked patterns found.",
+        "findings": []
+      }
+    },
+    "plugin_id": "com.shinsekai.chat_phone",
+    "stars": 0,
+    "stargazers_count": 0,
+    "forks": 0,
+    "forks_count": 0,
+    "repo_updated_at": "2026-07-06T04:38:04Z"
   }
 }
