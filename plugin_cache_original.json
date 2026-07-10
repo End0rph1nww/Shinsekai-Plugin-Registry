@@ -493,17 +493,17 @@
     },
     "social_link": "https://space.bilibili.com/18163005?spm_id_from=333.1007.0.0",
     "version": "1.0.0",
-    "commit_sha": "15aebcfd74fad0a544f30eb2d677fb9d1c796683",
-    "updated_at": "2026-07-10T12:17:59Z",
-    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-15aebcfd74fa.zip",
-    "sha256": "bd8ad26d3fcd67a8af6083b2af93510f4b86ac976fa95d4f7bfe9437ac3cbb5f",
-    "size": 4096368,
+    "commit_sha": "bcd20e3ca305ebc2927744a87ccd5f4e76818242",
+    "updated_at": "2026-07-10T18:01:56Z",
+    "download_url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-bcd20e3ca305.zip",
+    "sha256": "5165d8c3d5b9435ffc4f9ad19f76ba4c1f04ebf4de0577328f92b5c43a76f061",
+    "size": 4097938,
     "package": {
       "source": "r2",
-      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-15aebcfd74fa.zip",
-      "sha256": "bd8ad26d3fcd67a8af6083b2af93510f4b86ac976fa95d4f7bfe9437ac3cbb5f",
-      "size": 4096368,
-      "r2_key": "plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-15aebcfd74fa.zip"
+      "url": "https://r2.shinsekai.studio/plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-bcd20e3ca305.zip",
+      "sha256": "5165d8c3d5b9435ffc4f9ad19f76ba4c1f04ebf4de0577328f92b5c43a76f061",
+      "size": 4097938,
+      "r2_key": "plugins/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/shinsekai_chat_phone-1.0.0-bcd20e3ca305.zip"
     },
     "sec_scan": {
       "static": {
@@ -512,12 +512,12 @@
         "findings": []
       }
     },
-    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/logo-15aebcfd74fa.png",
+    "logo": "https://r2.shinsekai.studio/assets/Mizushima-Mihane/shinsekai_chat_phone/1.0.0/logo-bcd20e3ca305.png",
     "plugin_id": "com.shinsekai.chat_phone",
     "stars": 0,
     "stargazers_count": 0,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-07-10T11:57:53Z"
+    "repo_updated_at": "2026-07-10T16:40:22Z"
   }
 }
