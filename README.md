@@ -74,7 +74,7 @@ plugins/<owner>/<plugin>/<version>/<zip>
 assets/<owner>/<plugin>/<version>/logo-<commit>.png
 ```
 
-Clients and the plugin market should use the R2 `registry/plugin_cache_original.json` URL as the production registry source. The generated JSON committed back to GitHub is kept for review and rollback visibility, not as the production distribution URL.
+Clients and the plugin market should use `https://downloads.shinsekai.studio/registry/plugin_cache_original.json` as the production registry source. The [download gateway](worker/README.md) reads the generated object from R2, overlays D1-backed `download_count` values, and rewrites package URLs through the counting endpoint. Existing R2 domains remain available as origins and rollback paths. The generated JSON committed back to GitHub is kept for review and rollback visibility, not as the production distribution URL.
 
 The workflow also refreshes GitHub repository metadata on a schedule. Scheduled runs update `stars`, `forks`, and `repo_updated_at` in the generated registry without rebuilding every plugin package. To force this manually, run `Publish Plugin Packages` with `metadata_only=true` and `dry_run=false`.
 

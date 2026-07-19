@@ -1,0 +1,49 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shinsekai-plugin-download-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.05
+    }
+  },
+  "routes": [
+    {
+      "pattern": "downloads.shinsekai.studio",
+      "custom_domain": true
+    }
+  ],
+  "vars": {
+    "PUBLIC_BASE_URL": "https://downloads.shinsekai.studio",
+    "REGISTRY_KEY": "registry/plugin_cache_original.json"
+  },
+  "r2_buckets": [
+    {
+      "binding": "REGISTRY_BUCKET",
+      "bucket_name": "shinsekai-plugin-registry-prod"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DOWNLOADS_DB",
+      "database_name": "shinsekai-plugin-downloads",
+      "database_id": "3664a822-3b70-48b8-a9dd-74aad8d623d7",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "17 3 * * *"
+    ]
+  }
+}
