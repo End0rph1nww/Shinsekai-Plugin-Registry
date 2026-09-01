@@ -42,17 +42,17 @@
     "description": "Whisper ASR using faster whisper and RealtimeSTT plugin for Shinsekai, multi-language supported",
     "entry": "whisper_asr.plugin:WhisperAsrPlugin",
     "version": "0.1.0",
-    "commit_sha": "6ac796b667198ba643e7348d2f8e3707acec9d3b",
-    "updated_at": "2026-07-19T15:36:48Z",
-    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-6ac796b66719.zip",
-    "sha256": "bc212a43a13a2bb1362a13fda2cc08b76161cf0a180dc02be1d4a05922b92fcb",
-    "size": 10315,
+    "commit_sha": "8777c06dba1f963ff306a20ab62b7d87048cb818",
+    "updated_at": "2026-09-01T15:37:41Z",
+    "download_url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-8777c06dba1f.zip",
+    "sha256": "4d545c6bb649dbbc7571904d84ee1eef4de940d1e5a06e76d481f129048f4023",
+    "size": 10317,
     "package": {
       "source": "r2",
-      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-6ac796b66719.zip",
-      "sha256": "bc212a43a13a2bb1362a13fda2cc08b76161cf0a180dc02be1d4a05922b92fcb",
-      "size": 10315,
-      "r2_key": "plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-6ac796b66719.zip"
+      "url": "https://pub-9e11c3d88dbc49699652c547dcf7efe7.r2.dev/plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-8777c06dba1f.zip",
+      "sha256": "4d545c6bb649dbbc7571904d84ee1eef4de940d1e5a06e76d481f129048f4023",
+      "size": 10317,
+      "r2_key": "plugins/RachelForster/whisper_asr/0.1.0/whisper_asr-0.1.0-8777c06dba1f.zip"
     },
     "sec_scan": {
       "static": {
@@ -68,7 +68,7 @@
     "stargazers_count": 0,
     "forks": 1,
     "forks_count": 1,
-    "repo_updated_at": "2026-07-19T14:00:41Z"
+    "repo_updated_at": "2026-09-01T13:53:01Z"
   },
   "chat_ui_customize": {
     "name": "chat_ui_customize",
